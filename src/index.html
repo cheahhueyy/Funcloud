@@ -1,17 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
-  <title>Vanilla JavaScript App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LED Blink Controller</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 10px;
+            font-family: monospace;
+        }
+        .output {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            min-height: 100px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+    </style>
 </head>
-
 <body>
-  <main>
-    <h1>Vanilla JavaScript App</h1>
-  </main>
-</body>
+    <h1>LED Blink Controllers YIPPE</h1>
+    
+    <div class="form-group">
+        <label for="system-prompt">System Prompt (Optional):</label>
+        <textarea id="system-prompt">Convert blinking LED commands into JSON format. Return ONLY valid JSON with NO COMMENTS.
 
+For blinking patterns:
+{
+    "command": "blink",
+    "pattern": [
+        {"times": <number>, "on_duration": <seconds>, "off_duration": <seconds>}
+    ]
+}
+
+Return ONLY the JSON object. No explanations, comments, or code blocks.</textarea>
+    </div>
+    
+    <div class="form-group">
+        <label for="user-prompt">User Prompt:</label>
+        <textarea id="user-prompt" placeholder="Enter your blinking command here...">blink 5 times with 2 seconds on and 1 second off</textarea>
+    </div>
+    
+    <div class="form-group">
+        <label for="function-url">Azure Function URL:</label>
+        <input type="text" id="function-url" style="width: 100%; padding: 8px;" 
+               value="https://sdp1cloud.azurewebsites.net/api/http_trigger_pi">
+    </div>
+    
+    <button id="send-button">Send Command</button>
+    
+    <h2>Response:</h2>
+    <div id="response" class="output">Results will appear here...</div>
+    <div id="status" class="status"></div>
+
+    <script>
+        document.getElementById('send-button').addEventListener('click', async () => {
+            const systemPrompt = document.getElementById('system-prompt').value;
+            const userPrompt = document.getElementById('user-prompt').value;
+            const functionUrl = document.getElementById('function-url').value;
+            const responseDiv = document.getElementById('response');
+            const statusDiv = document.getElementById('status');
+            
+            responseDiv.textContent = 'Sending request...';
+            statusDiv.className = 'status';
+            statusDiv.textContent = '';
+            
+            try {
+                // Using the working format from your curl command
+                const response = await fetch(functionUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        "user_prompt": userPrompt,
+                        // Only include system_prompt if you're sure the API supports it
+                        ...(systemPrompt ? {"system_prompt": systemPrompt} : {})
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const data = await response.text();
+                responseDiv.textContent = data;
+                
+                statusDiv.className = 'status success';
+                statusDiv.textContent = 'Command sent successfully!';
+            } catch (error) {
+                responseDiv.textContent = 'Request failed';
+                
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = `
+                    <strong>Error: ${error.message}</strong><br>
+                    <ul>
+                        <li>Check that the Azure Function URL is correct</li>
+                        <li>Make sure your Azure Function is running</li>
+                        <li>Verify that CORS is enabled on your Function App</li>
+                    </ul>
+                    <p>Working curl command for reference:</p>
+                    <code>curl -X POST ${functionUrl} -H "Content-Type: application/json" -d '{"user_prompt": "${userPrompt.replace(/"/g, '\\"')}"}'</code>
+                `;
+            }
+        });
+    </script>
+</body>
 </html>
