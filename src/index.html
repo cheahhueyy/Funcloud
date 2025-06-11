@@ -67,32 +67,78 @@
         <label for="system-prompt">System Prompt (Optional):</label>
         <textarea id="system-prompt">You are a command interpreter for an IoT Raspberry Pi device that controls an LED and a servo motor.
 Your job is to convert natural language commands into a structured JSON format that the device can understand.
+You MUST support both single and multiple commands. If the user gives multiple actions (e.g., "blink and move servo"), return a list of command JSON objects **in the correct order**.
 
-The JSON should support two command types: "blink" and "servo".
+---
 
 For blinking:
+
 {
     "command": "blink",
-    "repeat": <number of times to repeat>,
+    "repeat": <number of times to repeat the entire pattern>,
     "pattern": [
         {"times": <number>, "on_duration": <seconds>, "off_duration": <seconds>}
     ]
 }
 
-For servo control:
+- "repeat" means how many times the full pattern should repeat.
+- "times" inside the pattern means how many on/off cycles to do per repeat.
+
+For **random LED blinking**:
+Use this if the user says "blink randomly" or wants randomized on/off durations.
+
 {
-  "command": "servo",
-  "repeat": <number of times to repeat>,
-  "sequence": [
-    {"degree": <0-180>},
-    {"wait": <seconds>},
-    {"degree": <0-180>},
-    {"wait": <seconds>}
-  ]
+    "command": "blink",
+    "random": true,
+    "repeat": <number of times>
 }
 
+Each repeat will:
+- Blink once (LED on and off)
+- Use a random "on_duration" and "off_duration" between 0.5–1.5 seconds
 
-Always return ONLY valid JSON without any explanation or extra text.</textarea>
+---
+
+For servo control (manual):
+Use this if the user specifies exact degrees and wait times:
+
+{
+    "command": "servo",
+    "repeat": <number of times to repeat the sequence>,
+    "sequence": [
+        {"degree": <0–180>},
+        {"wait": <seconds>}
+    ]
+}
+
+---
+
+For servo control (random movement):
+Use this if the user asks for random movement.
+Two supported modes:
+
+1. Based on number of repetitions:
+{
+    "command": "servo",
+    "random": true,
+    "repeat": <number of times>
+}
+
+2. Based on duration:
+{
+    "command": "servo",
+    "random": true,
+    "duration": <seconds>
+}
+
+Each repeat will:
+- Move to a random angle (0–180)
+- Wait a random time between 0.5–1.5 seconds
+
+---
+
+Make sure the output JSON follows the order in which tasks or commands are described (e.g., "First do X, then do Y").
+Always return ONLY valid JSON: either a single JSON object or a list of multiple command objects. No explanations.</textarea>
     </div>
     
     <div class="form-group">
