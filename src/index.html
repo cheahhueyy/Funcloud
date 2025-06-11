@@ -61,8 +61,8 @@
     </style>
 </head>
 <body>
-    <h1>LED Blink Controller YIPPE</h1>
-
+    <h1>LED Blink Controllers YIPPE</h1>
+    
     <div class="form-group">
         <label for="system-prompt">System Prompt (Optional):</label>
         <textarea id="system-prompt">You are a command interpreter for an IoT Raspberry Pi device that controls an LED and a servo motor.
@@ -73,11 +73,9 @@ The JSON should support two command types: "blink" and "servo".
 For blinking:
 {
     "command": "blink",
-    "pattern": {
-        "repeat": <number>,
-        "on_duration": <seconds>,
-        "off_duration": <seconds>
-    }
+    "pattern": [
+        {"times": <number>, "on_duration": <seconds>, "off_duration": <seconds>}
+    ]
 }
 
 For servo control:
@@ -86,22 +84,24 @@ For servo control:
     "degree": <0-180>
 }
 
+
+
 Always return ONLY valid JSON without any explanation or extra text.</textarea>
     </div>
-
+    
     <div class="form-group">
         <label for="user-prompt">User Prompt:</label>
-        <textarea id="user-prompt" placeholder="Enter your command here...">Blink the LED 3 times with 1s on and 0.5s off.</textarea>
+        <textarea id="user-prompt" placeholder="Enter your blinking command here...">Move servo to 10 degree.</textarea>
     </div>
-
+    
     <div class="form-group">
         <label for="function-url">Azure Function URL:</label>
         <input type="text" id="function-url" style="width: 100%; padding: 8px;" 
                value="https://raspizero-1.azurewebsites.net/api/http_trigger_pi">
     </div>
-
+    
     <button id="send-button">Send Command</button>
-
+    
     <h2>Response:</h2>
     <div id="response" class="output">Results will appear here...</div>
     <div id="status" class="status"></div>
@@ -113,12 +113,13 @@ Always return ONLY valid JSON without any explanation or extra text.</textarea>
             const functionUrl = document.getElementById('function-url').value;
             const responseDiv = document.getElementById('response');
             const statusDiv = document.getElementById('status');
-
+            
             responseDiv.textContent = 'Sending request...';
             statusDiv.className = 'status';
             statusDiv.textContent = '';
-
+            
             try {
+                // Using the working format from your curl command
                 const response = await fetch(functionUrl, {
                     method: 'POST',
                     headers: {
@@ -126,22 +127,23 @@ Always return ONLY valid JSON without any explanation or extra text.</textarea>
                     },
                     body: JSON.stringify({
                         "user_prompt": userPrompt,
+                        // Only include system_prompt if you're sure the API supports it
                         ...(systemPrompt ? {"system_prompt": systemPrompt} : {})
                     })
                 });
-
+                
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-
+                
                 const data = await response.text();
                 responseDiv.textContent = data;
-
+                
                 statusDiv.className = 'status success';
                 statusDiv.textContent = 'Command sent successfully!';
             } catch (error) {
                 responseDiv.textContent = 'Request failed';
-
+                
                 statusDiv.className = 'status error';
                 statusDiv.innerHTML = `
                     <strong>Error: ${error.message}</strong><br>
