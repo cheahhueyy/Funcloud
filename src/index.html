@@ -65,9 +65,12 @@
     
     <div class="form-group">
         <label for="system-prompt">System Prompt (Optional):</label>
-        <textarea id="system-prompt">Convert blinking LED commands into JSON format. Return ONLY valid JSON with NO COMMENTS.
+        <textarea id="system-prompt">You are a command interpreter for an IoT Raspberry Pi device that controls an LED and a servo motor.
+Your job is to convert natural language commands into a structured JSON format that the device can understand.
 
-For blinking patterns:
+The JSON should support two command types: "blink" and "servo".
+
+For blinking:
 {
     "command": "blink",
     "pattern": [
@@ -75,12 +78,20 @@ For blinking patterns:
     ]
 }
 
-Return ONLY the JSON object. No explanations, comments, or code blocks.</textarea>
+For servo control:
+{
+    "command": "servo",
+    "degree": <0-180>
+}
+
+
+
+Always return ONLY valid JSON without any explanation or extra text.</textarea>
     </div>
     
     <div class="form-group">
         <label for="user-prompt">User Prompt:</label>
-        <textarea id="user-prompt" placeholder="Enter your blinking command here...">blink 5 times with 2 seconds on and 1 second off</textarea>
+        <textarea id="user-prompt" placeholder="Enter your blinking command here...">Move servo to 10 degree.</textarea>
     </div>
     
     <div class="form-group">
