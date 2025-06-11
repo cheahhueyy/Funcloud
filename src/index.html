@@ -73,6 +73,7 @@ The JSON should support two command types: "blink" and "servo".
 For blinking:
 {
     "command": "blink",
+    "repeat": <number of times to repeat>,
     "pattern": [
         {"times": <number>, "on_duration": <seconds>, "off_duration": <seconds>}
     ]
@@ -80,10 +81,15 @@ For blinking:
 
 For servo control:
 {
-    "command": "servo",
-    "degree": <0-180>
+  "command": "servo",
+  "repeat": <number of times to repeat>,
+  "sequence": [
+    {"degree": <0-180>},
+    {"wait": <seconds>},
+    {"degree": <0-180>},
+    {"wait": <seconds>}
+  ]
 }
-
 
 
 Always return ONLY valid JSON without any explanation or extra text.</textarea>
