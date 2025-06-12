@@ -16,7 +16,7 @@
 
         .container {
             background-color: white;
-            max-width: 900px;
+            max-width: 1000px;
             width: 100%;
             padding: 30px;
             border-radius: 12px;
@@ -27,6 +27,17 @@
             text-align: center;
             color: #333;
             margin-bottom: 30px;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .column {
+            flex: 1;
+            min-width: 300px;
         }
 
         .form-group {
@@ -63,7 +74,7 @@
             cursor: pointer;
             font-size: 16px;
             display: block;
-            margin: 0 auto;
+            margin-top: 15px;
         }
 
         button:hover {
@@ -95,15 +106,36 @@
             color: #a94442;
             border: 1px solid #e0b4b4;
         }
+
+        .bottom-section {
+            margin-top: 40px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>LED Blink & Servo Motor Controller</h1>
-        
-        <div class="form-group">
-            <label for="system-prompt">System Prompt (Optional):</label>
-            <textarea id="system-prompt">You are a command interpreter for an IoT Raspberry Pi device that controls an LED and a servo motor.
+
+        <div class="row">
+            <div class="column">
+                <div class="form-group">
+                    <label for="user-prompt">User Prompt:</label>
+                    <textarea id="user-prompt" placeholder="Enter your command here...">Move servo to 10 degree.</textarea>
+                </div>
+                <button id="send-button">Send Command</button>
+            </div>
+
+            <div class="column">
+                <h2>Response:</h2>
+                <div id="response" class="output">Results will appear here...</div>
+                <div id="status" class="status"></div>
+            </div>
+        </div>
+
+        <div class="bottom-section">
+            <div class="form-group">
+                <label for="system-prompt">System Prompt (Optional):</label>
+                <textarea id="system-prompt">You are a command interpreter for an IoT Raspberry Pi device that controls an LED and a servo motor.
 Your job is to convert natural language commands into a structured JSON format that the device can understand.
 You MUST support both single and multiple commands. If the user gives multiple actions (e.g., "blink and move servo"), return a list of command JSON objects **in the correct order**.
 
@@ -113,9 +145,9 @@ For blinking:
 
 {
     "command": "blink",
-    "repeat": <number of times to repeat the entire pattern>,
+    "repeat": &lt;number of times to repeat the entire pattern&gt;,
     "pattern": [
-        {"times": <number>, "on_duration": <seconds>, "off_duration": <seconds>}
+        {"times": &lt;number&gt;, "on_duration": &lt;seconds&gt;, "off_duration": &lt;seconds&gt;}
     ]
 }
 
@@ -124,7 +156,7 @@ For random blinking:
 {
     "command": "blink",
     "random": true,
-    "repeat": <number of times>
+    "repeat": &lt;number of times&gt;
 }
 
 ---
@@ -133,10 +165,10 @@ For servo control (manual):
 
 {
     "command": "servo",
-    "repeat": <number>,
+    "repeat": &lt;number&gt;,
     "sequence": [
-        {"degree": <0–180>},
-        {"wait": <seconds>}
+        {"degree": &lt;0–180&gt;},
+        {"wait": &lt;seconds&gt;}
     ]
 }
 
@@ -145,25 +177,15 @@ For random servo movement:
 {
     "command": "servo",
     "random": true,
-    "repeat": <number> // or use "duration": <seconds>
+    "repeat": &lt;number&gt; // or use "duration": &lt;seconds&gt;
 }</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="function-url">Azure Function URL:</label>
+                <input type="text" id="function-url" value="https://raspizero-1.azurewebsites.net/api/http_trigger_pi">
+            </div>
         </div>
-        
-        <div class="form-group">
-            <label for="user-prompt">User Prompt:</label>
-            <textarea id="user-prompt" placeholder="Enter your command here...">Move servo to 10 degree.</textarea>
-        </div>
-        
-        <div class="form-group">
-            <label for="function-url">Azure Function URL:</label>
-            <input type="text" id="function-url" value="https://raspizero-1.azurewebsites.net/api/http_trigger_pi">
-        </div>
-        
-        <button id="send-button">Send Command</button>
-        
-        <h2>Response:</h2>
-        <div id="response" class="output">Results will appear here...</div>
-        <div id="status" class="status"></div>
     </div>
 
     <script>
