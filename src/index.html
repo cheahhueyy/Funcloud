@@ -1,214 +1,113 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LED & Servo Controller</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #fff9e6;
-            margin: 0;
-            padding: 40px;
-            display: flex;
-            justify-content: center;
+<!-- [UNCHANGED HTML HEAD & STYLES ABOVE THIS LINE] -->
+<!-- Just replace the JS and add one new button below the history section -->
+
+<!-- Add this button under the history section in HTML -->
+<div style="text-align: right; margin-top: 10px;">
+    <button id="clear-history">🗑️ Clear History</button>
+</div>
+
+<!-- Add/Update this JS block at the bottom of your <script> tag -->
+<script>
+    const modeToggle = document.getElementById('mode-toggle');
+    const userPrompt = document.getElementById('user-prompt');
+    const jsonPreview = document.getElementById('json-preview');
+    const historyDiv = document.getElementById('history');
+    const clearHistoryBtn = document.getElementById('clear-history');
+
+    modeToggle.addEventListener('change', () => {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    });
+
+    // Preserve theme
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        modeToggle.checked = true;
+    }
+
+    // JSON preview
+    userPrompt.addEventListener('input', () => {
+        const preview = userPrompt.value.trim();
+        jsonPreview.textContent = preview
+            ? `{\n  "user_prompt": "${preview.replace(/"/g, '\\"')}"\n}`
+            : 'Waiting for input...';
+    });
+
+    // Load saved history
+    function loadHistory() {
+        const saved = JSON.parse(localStorage.getItem('commandHistory') || '[]');
+        saved.forEach(entry => addHistoryEntry(entry.text, entry.time, false));
+    }
+
+    function addHistoryEntry(text, time = new Date().toLocaleTimeString(), save = true) {
+        const entry = document.createElement('div');
+        entry.className = 'history-entry';
+        entry.innerHTML = `<span class="timestamp">[${time}]</span> ${text}`;
+        historyDiv.prepend(entry);
+
+        if (save) {
+            const saved = JSON.parse(localStorage.getItem('commandHistory') || '[]');
+            saved.unshift({ text, time });
+            localStorage.setItem('commandHistory', JSON.stringify(saved));
         }
+    }
 
-        .container {
-            background-color: white;
-            max-width: 900px;
-            width: 100%;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    // Clear history
+    clearHistoryBtn.addEventListener('click', () => {
+        if (confirm('Clear command history?')) {
+            localStorage.removeItem('commandHistory');
+            historyDiv.innerHTML = '';
         }
+    });
 
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-        }
+    // Send command
+    document.getElementById('send-button').addEventListener('click', async () => {
+        const systemPrompt = document.getElementById('system-prompt').value.trim();
+        const userPromptVal = userPrompt.value.trim();
+        const functionUrl = document.getElementById('function-url').value;
+        const responseDiv = document.getElementById('response');
+        const statusDiv = document.getElementById('status');
 
-        .form-group {
-            margin-bottom: 25px;
-        }
+        if (!userPromptVal) return alert("User prompt is required.");
 
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #444;
-        }
+        responseDiv.textContent = 'Sending request...';
+        statusDiv.className = 'status';
+        statusDiv.textContent = '';
 
-        textarea, input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            font-size: 14px;
-            font-family: monospace;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-        }
+        try {
+            const response = await fetch(functionUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_prompt: userPromptVal,
+                    ...(systemPrompt ? { system_prompt: systemPrompt } : {})
+                })
+            });
 
-        textarea {
-            height: 150px;
-        }
+            const text = await response.text();
+            responseDiv.textContent = text;
 
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            display: block;
-            margin: 0 auto;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        .output, .status {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: monospace;
-        }
-
-        .output {
-            background-color: #f7f7f7;
-            border: 1px solid #ccc;
-            white-space: pre-wrap;
-            min-height: 100px;
-        }
-
-        .status.success {
-            background-color: #e6f4ea;
-            color: #2d7033;
-            border: 1px solid #b2d8b2;
-        }
-
-        .status.error {
-            background-color: #fbeaea;
-            color: #a94442;
-            border: 1px solid #e0b4b4;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>LED Blink & Servo Motor Controller</h1>
-        
-        <div class="form-group">
-            <label for="system-prompt">System Prompt (Optional):</label>
-            <textarea id="system-prompt">You are a command interpreter for an IoT Raspberry Pi device that controls an LED and a servo motor.
-Your job is to convert natural language commands into a structured JSON format that the device can understand.
-You MUST support both single and multiple commands. If the user gives multiple actions (e.g., "blink and move servo"), return a list of command JSON objects **in the correct order**.
-
----
-
-For blinking:
-
-{
-    "command": "blink",
-    "repeat": <number of times to repeat the entire pattern>,
-    "pattern": [
-        {"times": <number>, "on_duration": <seconds>, "off_duration": <seconds>}
-    ]
-}
-
-For random blinking:
-
-{
-    "command": "blink",
-    "random": true,
-    "repeat": <number of times>
-}
-
----
-
-For servo control (manual):
-
-{
-    "command": "servo",
-    "repeat": <number>,
-    "sequence": [
-        {"degree": <0–180>},
-        {"wait": <seconds>}
-    ]
-}
-
-For random servo movement:
-
-{
-    "command": "servo",
-    "random": true,
-    "repeat": <number> // or use "duration": <seconds>
-}</textarea>
-        </div>
-        
-        <div class="form-group">
-            <label for="user-prompt">User Prompt:</label>
-            <textarea id="user-prompt" placeholder="Enter your command here...">Move servo to 10 degree.</textarea>
-        </div>
-        
-        <div class="form-group">
-            <label for="function-url">Azure Function URL:</label>
-            <input type="text" id="function-url" value="https://raspizero-1.azurewebsites.net/api/http_trigger_pi">
-        </div>
-        
-        <button id="send-button">Send Command</button>
-        
-        <h2>Response:</h2>
-        <div id="response" class="output">Results will appear here...</div>
-        <div id="status" class="status"></div>
-    </div>
-
-    <script>
-        document.getElementById('send-button').addEventListener('click', async () => {
-            const systemPrompt = document.getElementById('system-prompt').value;
-            const userPrompt = document.getElementById('user-prompt').value;
-            const functionUrl = document.getElementById('function-url').value;
-            const responseDiv = document.getElementById('response');
-            const statusDiv = document.getElementById('status');
-
-            responseDiv.textContent = 'Sending request...';
-            statusDiv.className = 'status';
-            statusDiv.textContent = '';
-
-            try {
-                const response = await fetch(functionUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        "user_prompt": userPrompt,
-                        ...(systemPrompt ? { "system_prompt": systemPrompt } : {})
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                const data = await response.text();
-                responseDiv.textContent = data;
+            if (response.ok) {
                 statusDiv.className = 'status success';
                 statusDiv.textContent = '✅ Command sent successfully!';
-            } catch (error) {
-                responseDiv.textContent = 'Request failed';
-                statusDiv.className = 'status error';
-                statusDiv.innerHTML = `
-                    <strong>Error: ${error.message}</strong><br>
-                    <ul>
-                        <li>Check the Azure Function URL</li>
-                        <li>Ensure your Function App is running</li>
-                        <li>Verify CORS settings on your Function App</li>
-                    </ul>
-                `;
+                addHistoryEntry(userPromptVal);
+            } else {
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
-        });
-    </script>
-</body>
-</html>
+        } catch (err) {
+            responseDiv.textContent = 'Request failed';
+            statusDiv.className = 'status error';
+            statusDiv.innerHTML = `
+                <strong>Error: ${err.message}</strong><br>
+                <ul>
+                    <li>Check Azure Function URL</li>
+                    <li>Ensure Function App is running</li>
+                    <li>Verify CORS settings</li>
+                </ul>
+            `;
+        }
+    });
+
+    // Load history on page load
+    loadHistory();
+</script>
