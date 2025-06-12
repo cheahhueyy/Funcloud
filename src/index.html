@@ -5,244 +5,174 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LED & Servo Controller</title>
     <style>
-        :root {
-            --bg-light: #fff9e6;
-            --bg-dark: #1f1f1f;
-            --text-light: #333;
-            --text-dark: #eee;
-            --card-light: #ffffff;
-            --card-dark: #2a2a2a;
-            --border-light: #ccc;
-            --border-dark: #444;
-            --success: #d4edda;
-            --error: #f8d7da;
-        }
-
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff9e6;
             margin: 0;
             padding: 40px;
             display: flex;
             justify-content: center;
-            background-color: var(--bg-light);
-            color: var(--text-light);
-            transition: background 0.3s, color 0.3s;
-        }
-
-        body.dark-mode {
-            background-color: var(--bg-dark);
-            color: var(--text-dark);
         }
 
         .container {
-            max-width: 950px;
+            background-color: white;
+            max-width: 900px;
             width: 100%;
-            background-color: var(--card-light);
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            transition: background 0.3s;
-        }
-
-        body.dark-mode .container {
-            background-color: var(--card-dark);
         }
 
         h1 {
             text-align: center;
+            color: #333;
             margin-bottom: 30px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         label {
-            font-weight: bold;
-            margin-bottom: 5px;
             display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #444;
         }
 
         textarea, input[type="text"] {
             width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            font-family: monospace;
-            box-sizing: border-box;
+            padding: 12px;
             font-size: 14px;
+            font-family: monospace;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
         }
 
-        body.dark-mode textarea, 
-        body.dark-mode input {
-            background-color: #333;
-            color: white;
-            border: 1px solid var(--border-dark);
+        textarea {
+            height: 150px;
         }
 
         button {
             background-color: #4CAF50;
             color: white;
-            padding: 10px 18px;
+            padding: 12px 20px;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
             cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 0 auto;
         }
 
         button:hover {
             background-color: #45a049;
         }
 
-        .output, .status, .history {
-            margin-top: 15px;
-            padding: 12px;
+        .output, .status {
+            margin-top: 20px;
+            padding: 15px;
             border-radius: 8px;
             font-family: monospace;
         }
 
         .output {
-            background-color: #f5f5f5;
+            background-color: #f7f7f7;
             border: 1px solid #ccc;
             white-space: pre-wrap;
-            min-height: 80px;
-        }
-
-        body.dark-mode .output {
-            background-color: #444;
-            color: #eee;
-            border-color: var(--border-dark);
+            min-height: 100px;
         }
 
         .status.success {
-            background-color: var(--success);
+            background-color: #e6f4ea;
             color: #2d7033;
+            border: 1px solid #b2d8b2;
         }
 
         .status.error {
-            background-color: var(--error);
+            background-color: #fbeaea;
             color: #a94442;
-        }
-
-        .switch {
-            float: right;
-            margin-top: -10px;
-        }
-
-        .switch input {
-            display: none;
-        }
-
-        .switch-label {
-            cursor: pointer;
-            padding: 8px 16px;
-            background-color: #ddd;
-            border-radius: 8px;
-        }
-
-        body.dark-mode .switch-label {
-            background-color: #555;
-            color: white;
-        }
-
-        .section-title {
-            margin-top: 40px;
-            margin-bottom: 10px;
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        .history {
-            max-height: 200px;
-            overflow-y: auto;
-            background-color: #f7f7f7;
-            border: 1px solid #ccc;
-        }
-
-        body.dark-mode .history {
-            background-color: #2c2c2c;
-            border-color: #444;
-        }
-
-        .history-entry {
-            border-bottom: 1px solid #ccc;
-            padding: 6px 0;
-        }
-
-        .timestamp {
-            color: gray;
-            font-size: 12px;
+            border: 1px solid #e0b4b4;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="switch">
-            <label class="switch-label">
-                <input type="checkbox" id="mode-toggle"> Toggle Dark Mode
-            </label>
-        </div>
-
         <h1>LED Blink & Servo Motor Controller</h1>
-
+        
         <div class="form-group">
             <label for="system-prompt">System Prompt (Optional):</label>
-            <textarea id="system-prompt">You are a command interpreter for an IoT Raspberry Pi device that controls an LED and a servo motor...
-            </textarea>
-        </div>
+            <textarea id="system-prompt">You are a command interpreter for an IoT Raspberry Pi device that controls an LED and a servo motor.
+Your job is to convert natural language commands into a structured JSON format that the device can understand.
+You MUST support both single and multiple commands. If the user gives multiple actions (e.g., "blink and move servo"), return a list of command JSON objects **in the correct order**.
 
+---
+
+For blinking:
+
+{
+    "command": "blink",
+    "repeat": <number of times to repeat the entire pattern>,
+    "pattern": [
+        {"times": <number>, "on_duration": <seconds>, "off_duration": <seconds>}
+    ]
+}
+
+For random blinking:
+
+{
+    "command": "blink",
+    "random": true,
+    "repeat": <number of times>
+}
+
+---
+
+For servo control (manual):
+
+{
+    "command": "servo",
+    "repeat": <number>,
+    "sequence": [
+        {"degree": <0–180>},
+        {"wait": <seconds>}
+    ]
+}
+
+For random servo movement:
+
+{
+    "command": "servo",
+    "random": true,
+    "repeat": <number> // or use "duration": <seconds>
+}</textarea>
+        </div>
+        
         <div class="form-group">
             <label for="user-prompt">User Prompt:</label>
-            <textarea id="user-prompt" placeholder="Enter a command like: Blink LED 3 times or Move servo to 45 degrees"></textarea>
+            <textarea id="user-prompt" placeholder="Enter your command here...">Move servo to 10 degree.</textarea>
         </div>
-
+        
         <div class="form-group">
             <label for="function-url">Azure Function URL:</label>
             <input type="text" id="function-url" value="https://raspizero-1.azurewebsites.net/api/http_trigger_pi">
         </div>
-
+        
         <button id="send-button">Send Command</button>
-
-        <div class="section-title">Live JSON Preview</div>
-        <div id="json-preview" class="output">Waiting for input...</div>
-
-        <div class="section-title">Response</div>
+        
+        <h2>Response:</h2>
         <div id="response" class="output">Results will appear here...</div>
         <div id="status" class="status"></div>
-
-        <div class="section-title">Command History</div>
-        <div id="history" class="history"></div>
     </div>
 
     <script>
-        const modeToggle = document.getElementById('mode-toggle');
-        modeToggle.addEventListener('change', () => {
-            document.body.classList.toggle('dark-mode');
-        });
-
-        const userPrompt = document.getElementById('user-prompt');
-        const jsonPreview = document.getElementById('json-preview');
-
-        userPrompt.addEventListener('input', () => {
-            const preview = userPrompt.value.trim();
-            if (preview) {
-                jsonPreview.textContent = `{
-    "user_prompt": "${preview.replace(/"/g, '\\"')}"
-}`;
-            } else {
-                jsonPreview.textContent = 'Waiting for input...';
-            }
-        });
-
         document.getElementById('send-button').addEventListener('click', async () => {
-            const systemPrompt = document.getElementById('system-prompt').value.trim();
-            const userPromptVal = userPrompt.value.trim();
+            const systemPrompt = document.getElementById('system-prompt').value;
+            const userPrompt = document.getElementById('user-prompt').value;
             const functionUrl = document.getElementById('function-url').value;
             const responseDiv = document.getElementById('response');
             const statusDiv = document.getElementById('status');
-            const historyDiv = document.getElementById('history');
-
-            if (!userPromptVal) return alert("User prompt is required.");
 
             responseDiv.textContent = 'Sending request...';
             statusDiv.className = 'status';
@@ -251,38 +181,30 @@
             try {
                 const response = await fetch(functionUrl, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        user_prompt: userPromptVal,
-                        ...(systemPrompt ? { system_prompt: systemPrompt } : {})
+                        "user_prompt": userPrompt,
+                        ...(systemPrompt ? { "system_prompt": systemPrompt } : {})
                     })
                 });
 
-                const text = await response.text();
-                responseDiv.textContent = text;
-
-                if (response.ok) {
-                    statusDiv.className = 'status success';
-                    statusDiv.textContent = '✅ Command sent successfully!';
-                    const timestamp = new Date().toLocaleTimeString();
-                    const entry = document.createElement('div');
-                    entry.className = 'history-entry';
-                    entry.innerHTML = `<span class="timestamp">[${timestamp}]</span> ${userPromptVal}`;
-                    historyDiv.prepend(entry);
-                } else {
+                if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-            } catch (err) {
+
+                const data = await response.text();
+                responseDiv.textContent = data;
+                statusDiv.className = 'status success';
+                statusDiv.textContent = '✅ Command sent successfully!';
+            } catch (error) {
                 responseDiv.textContent = 'Request failed';
                 statusDiv.className = 'status error';
                 statusDiv.innerHTML = `
-                    <strong>Error: ${err.message}</strong><br>
+                    <strong>Error: ${error.message}</strong><br>
                     <ul>
                         <li>Check the Azure Function URL</li>
-                        <li>Ensure Function App is running</li>
-                        <li>Verify CORS settings</li>
+                        <li>Ensure your Function App is running</li>
+                        <li>Verify CORS settings on your Function App</li>
                     </ul>
                 `;
             }
