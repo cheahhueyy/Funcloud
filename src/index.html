@@ -3,69 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LED Blink Controller</title>
+    <title>LED & Servo Controller</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff9e6;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
         }
-        textarea {
+
+        .container {
+            background-color: white;
+            max-width: 900px;
             width: 100%;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #444;
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            font-family: monospace;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        textarea {
             height: 150px;
-            margin-bottom: 10px;
-            font-family: monospace;
         }
-        .output {
-            background-color: #f5f5f5;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 4px;
-            white-space: pre-wrap;
-            font-family: monospace;
-            min-height: 100px;
-        }
+
         button {
             background-color: #4CAF50;
             color: white;
-            padding: 10px 15px;
+            padding: 12px 20px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 0 auto;
         }
+
         button:hover {
             background-color: #45a049;
         }
-        .form-group {
-            margin-bottom: 15px;
+
+        .output, .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+
+        .output {
+            background-color: #f7f7f7;
+            border: 1px solid #ccc;
+            white-space: pre-wrap;
+            min-height: 100px;
         }
-        .status {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 4px;
+
+        .status.success {
+            background-color: #e6f4ea;
+            color: #2d7033;
+            border: 1px solid #b2d8b2;
         }
-        .success {
-            background-color: #dff0d8;
-            color: #3c763d;
-        }
-        .error {
-            background-color: #f2dede;
+
+        .status.error {
+            background-color: #fbeaea;
             color: #a94442;
+            border: 1px solid #e0b4b4;
         }
     </style>
 </head>
 <body>
-    <h1>LED Blink and Servo Motor Controllers</h1>
-    
-    <div class="form-group">
-        <label for="system-prompt">System Prompt (Optional):</label>
-        <textarea id="system-prompt">You are a command interpreter for an IoT Raspberry Pi device that controls an LED and a servo motor.
+    <div class="container">
+        <h1>LED Blink & Servo Motor Controller</h1>
+        
+        <div class="form-group">
+            <label for="system-prompt">System Prompt (Optional):</label>
+            <textarea id="system-prompt">You are a command interpreter for an IoT Raspberry Pi device that controls an LED and a servo motor.
 Your job is to convert natural language commands into a structured JSON format that the device can understand.
 You MUST support both single and multiple commands. If the user gives multiple actions (e.g., "blink and move servo"), return a list of command JSON objects **in the correct order**.
 
@@ -81,11 +119,7 @@ For blinking:
     ]
 }
 
-- "repeat" means how many times the full pattern should repeat.
-- "times" inside the pattern means how many on/off cycles to do per repeat.
-
-For **random LED blinking**:
-Use this if the user says "blink randomly" or wants randomized on/off durations.
+For random blinking:
 
 {
     "command": "blink",
@@ -93,70 +127,44 @@ Use this if the user says "blink randomly" or wants randomized on/off durations.
     "repeat": <number of times>
 }
 
-Each repeat will:
-- Blink once (LED on and off)
-- Use a random "on_duration" and "off_duration" between 0.5–1.5 seconds
-
 ---
 
 For servo control (manual):
-Use this if the user specifies exact degrees and wait times:
 
 {
     "command": "servo",
-    "repeat": <number of times to repeat the sequence>,
+    "repeat": <number>,
     "sequence": [
         {"degree": <0–180>},
         {"wait": <seconds>}
     ]
 }
 
----
+For random servo movement:
 
-For servo control (random movement):
-Use this if the user asks for random movement.
-Two supported modes:
-
-1. Based on number of repetitions:
 {
     "command": "servo",
     "random": true,
-    "repeat": <number of times>
-}
-
-2. Based on duration:
-{
-    "command": "servo",
-    "random": true,
-    "duration": <seconds>
-}
-
-Each repeat will:
-- Move to a random angle (0–180)
-- Wait a random time between 0.5–1.5 seconds
-
----
-
-Make sure the output JSON follows the order in which tasks or commands are described (e.g., "First do X, then do Y").
-Always return ONLY valid JSON: either a single JSON object or a list of multiple command objects. No explanations.</textarea>
+    "repeat": <number> // or use "duration": <seconds>
+}</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="user-prompt">User Prompt:</label>
+            <textarea id="user-prompt" placeholder="Enter your command here...">Move servo to 10 degree.</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="function-url">Azure Function URL:</label>
+            <input type="text" id="function-url" value="https://raspizero-1.azurewebsites.net/api/http_trigger_pi">
+        </div>
+        
+        <button id="send-button">Send Command</button>
+        
+        <h2>Response:</h2>
+        <div id="response" class="output">Results will appear here...</div>
+        <div id="status" class="status"></div>
     </div>
-    
-    <div class="form-group">
-        <label for="user-prompt">User Prompt:</label>
-        <textarea id="user-prompt" placeholder="Enter your blinking command here...">Move servo to 10 degree.</textarea>
-    </div>
-    
-    <div class="form-group">
-        <label for="function-url">Azure Function URL:</label>
-        <input type="text" id="function-url" style="width: 100%; padding: 8px;" 
-               value="https://raspizero-1.azurewebsites.net/api/http_trigger_pi">
-    </div>
-    
-    <button id="send-button">Send Command</button>
-    
-    <h2>Response:</h2>
-    <div id="response" class="output">Results will appear here...</div>
-    <div id="status" class="status"></div>
 
     <script>
         document.getElementById('send-button').addEventListener('click', async () => {
@@ -165,47 +173,39 @@ Always return ONLY valid JSON: either a single JSON object or a list of multiple
             const functionUrl = document.getElementById('function-url').value;
             const responseDiv = document.getElementById('response');
             const statusDiv = document.getElementById('status');
-            
+
             responseDiv.textContent = 'Sending request...';
             statusDiv.className = 'status';
             statusDiv.textContent = '';
-            
+
             try {
-                // Using the working format from your curl command
                 const response = await fetch(functionUrl, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         "user_prompt": userPrompt,
-                        // Only include system_prompt if you're sure the API supports it
-                        ...(systemPrompt ? {"system_prompt": systemPrompt} : {})
+                        ...(systemPrompt ? { "system_prompt": systemPrompt } : {})
                     })
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-                
+
                 const data = await response.text();
                 responseDiv.textContent = data;
-                
                 statusDiv.className = 'status success';
-                statusDiv.textContent = 'Command sent successfully!';
+                statusDiv.textContent = '✅ Command sent successfully!';
             } catch (error) {
                 responseDiv.textContent = 'Request failed';
-                
                 statusDiv.className = 'status error';
                 statusDiv.innerHTML = `
                     <strong>Error: ${error.message}</strong><br>
                     <ul>
-                        <li>Check that the Azure Function URL is correct</li>
-                        <li>Make sure your Azure Function is running</li>
-                        <li>Verify that CORS is enabled on your Function App</li>
+                        <li>Check the Azure Function URL</li>
+                        <li>Ensure your Function App is running</li>
+                        <li>Verify CORS settings on your Function App</li>
                     </ul>
-                    <p>Working curl command for reference:</p>
-                    <code>curl -X POST ${functionUrl} -H "Content-Type: application/json" -d '{"user_prompt": "${userPrompt.replace(/"/g, '\\"')}"}'</code>
                 `;
             }
         });
