@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LED Blink Controller</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #e17055 0%, #fd79a8 50%, #6c5ce7 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(225, 112, 85, 0.3)); }
+            to { filter: drop-shadow(0 0 30px rgba(253, 121, 168, 0.4)); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #636e72;
+            margin-bottom: 2rem;
+        }
+
+        .led-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff4444, #ff8888);
+            display: inline-block;
+            margin: 0 10px;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .panel:hover::before {
+            left: 100%;
+        }
+
+        .panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #00d4ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            color: #ffffff;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            resize: vertical;
+        }
+
+        textarea {
+            min-height: 120px;
+        }
+
+        textarea:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .panel-subtitle {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            margin-bottom: 1.5rem;
+            margin-top: -1rem;
+            font-weight: 400;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+
+        .send-button-small {
+            background: linear-gradient(135deg, #e17055 0%, #fd79a8 100%);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 80px;
+        }
+
+        .send-button-small::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .send-button-small:hover::before {
+            left: 100%;
+        }
+
+        .send-button-small:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(225, 112, 85, 0.4);
+        }
+
+        .send-button-small:active {
+            transform: translateY(0);
+        }
+
+        .config-section {
+            grid-column: 1 / -1;
+        }
+
+        .toggle-button {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .toggle-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
+        }
+
+        .toggle-button:active {
+            transform: translateY(0);
+        }
+
+        #system-prompt-container {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        #system-prompt-container.show {
+            display: block !important;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        #system-prompt-container.hide {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                max-height: 500px;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 1;
+                max-height: 500px;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                max-height: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        .response-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #00d4ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .output {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            min-height: 120px;
+            color: #e0e0e0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .status {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .status.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .success {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.2), rgba(46, 204, 113, 0.1));
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            color: #27ae60;
+        }
+
+        .error {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.2), rgba(231, 76, 60, 0.1));
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            color: #e74c3c;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(225, 112, 85, 0.3);
+            border-radius: 50%;
+            border-top-color: #e17055;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .floating-icons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-icon {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 15s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.1;
+            }
+            90% {
+                opacity: 0.1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-icons">
+        <div class="floating-icon" style="left: 10%; animation-delay: 0s; font-size: 30px;">💡</div>
+        <div class="floating-icon" style="left: 20%; animation-delay: 2s; font-size: 25px;">⚡</div>
+        <div class="floating-icon" style="left: 30%; animation-delay: 4s; font-size: 35px;">🔧</div>
+        <div class="floating-icon" style="left: 40%; animation-delay: 6s; font-size: 30px;">🤖</div>
+        <div class="floating-icon" style="left: 50%; animation-delay: 8s; font-size: 25px;">💡</div>
+        <div class="floating-icon" style="left: 60%; animation-delay: 10s; font-size: 30px;">⚡</div>
+        <div class="floating-icon" style="left: 70%; animation-delay: 12s; font-size: 35px;">🔧</div>
+        <div class="floating-icon" style="left: 80%; animation-delay: 14s; font-size: 25px;">🤖</div>
+        <div class="floating-icon" style="left: 90%; animation-delay: 16s; font-size: 30px;">💡</div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <h1 class="title">LED Blink & Servo Motor Controller</h1>
+            <p class="subtitle">Advanced IoT Device Command Interface</p>
+            <div>
+                <span class="led-indicator"></span>
+                <span class="led-indicator" style="animation-delay: 0.5s;"></span>
+                <span class="led-indicator" style="animation-delay: 1s;"></span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- URL and System Prompt at top -->
+            <div class="panel config-section">
+                <div class="form-group">
+                    <label for="function-url">Azure Function URL</label>
+                    <input type="text" id="function-url" 
+                           value="https://raspizero-1.azurewebsites.net/api/http_trigger_pi">
+                </div>
+                
+                <div class="form-group">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
+                        <label for="system-prompt" style="margin-bottom: 0;">System Prompt (Optional):</label>
+                        <button id="toggle-system-prompt" class="toggle-button">Show</button>
+                    </div>
+                    <div id="system-prompt-container" style="display: none;">
+                        <textarea id="system-prompt">You are a command interpreter for an IoT Raspberry Pi device that controls an LED and a servo motor.
+Your job is to convert natural language commands into a structured JSON format that the device can understand.
+You MUST support both single and multiple commands. If the user gives multiple actions (e.g., "blink and move servo"), return a list of command JSON objects **in the correct order**.
+
+---
+
+For blinking:
+
+{
+    "command": "blink",
+    "repeat": <number of times to repeat the entire pattern>,
+    "pattern": [
+        {"times": <number>, "on_duration": <seconds>, "off_duration": <seconds>}
+    ]
+}
+
+- "repeat" means how many times the full pattern should repeat.
+- "times" inside the pattern means how many on/off cycles to do per repeat.
+
+For **random LED blinking**:
+Use this if the user says "blink randomly" or wants randomized on/off durations.
+
+{
+    "command": "blink",
+    "random": true,
+    "repeat": <number of times>
+}
+
+Each repeat will:
+- Blink once (LED on and off)
+- Use a random "on_duration" and "off_duration" between 0.5–1.5 seconds
+
+---
+
+For servo control (manual):
+Use this if the user specifies exact degrees and wait times:
+
+{
+    "command": "servo",
+    "repeat": <number of times to repeat the sequence>,
+    "sequence": [
+        {"degree": <0–180>},
+        {"wait": <seconds>}
+    ]
+}
+
+---
+
+For servo control (random movement):
+Use this if the user asks for random movement.
+Two supported modes:
+
+1. Based on number of repetitions:
+{
+    "command": "servo",
+    "random": true,
+    "repeat": <number of times>
+}
+
+2. Based on duration:
+{
+    "command": "servo",
+    "random": true,
+    "duration": <seconds>
+}
+
+Each repeat will:
+- Move to a random angle (0–180)
+- Wait a random time between 0.5–1.5 seconds
+
+---
+
+Make sure the output JSON follows the order in which tasks or commands are described (e.g., "First do X, then do Y").
+Always return ONLY valid JSON: either a single JSON object or a list of multiple command objects. No explanations.</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Prompt and Response side by side -->
+            <div class="panel user-prompt-panel">
+                <h2 class="panel-title">
+                    👤 User Prompt
+                </h2>
+                <p class="panel-subtitle">Command Interface</p>
+                
+                <div class="form-group">
+                    <label for="user-prompt">Natural Language Command</label>
+                    <textarea id="user-prompt" placeholder="Try: 'Blink 3 times fast' or 'Move servo to 90 degrees'">Move servo to 10 degree.</textarea>
+                </div>
+                
+                <div class="button-container">
+                    <button id="send-button" class="send-button-small">
+                        Send
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel device-response-panel">
+                <h2 class="response-title">
+                    🔧 Device Response
+                </h2>
+                <div id="response" class="output">Waiting for command...</div>
+                <div id="status" class="status"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('send-button').addEventListener('click', async () => {
+            const systemPrompt = document.getElementById('system-prompt').value;
+            const userPrompt = document.getElementById('user-prompt').value;
+            const functionUrl = document.getElementById('function-url').value;
+            const responseDiv = document.getElementById('response');
+            const statusDiv = document.getElementById('status');
+            const sendButton = document.getElementById('send-button');
+            
+            // Reset status
+            statusDiv.className = 'status';
+            statusDiv.classList.remove('show');
+            
+            // Show loading state
+            sendButton.innerHTML = '<span class="loading"></span>Sending...';
+            sendButton.disabled = true;
+            responseDiv.textContent = 'Transmitting to device...';
+            
+            try {
+                const response = await fetch(functionUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        "user_prompt": userPrompt,
+                        ...(systemPrompt ? {"system_prompt": systemPrompt} : {})
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.text();
+                responseDiv.textContent = data;
+                
+                statusDiv.className = 'status success show';
+                statusDiv.innerHTML = '✅ Command executed successfully!';
+                
+            } catch (error) {
+                responseDiv.textContent = `❌ Connection Failed\n\nError: ${error.message}`;
+                
+                statusDiv.className = 'status error show';
+                statusDiv.innerHTML = `
+                    <strong>⚠️ Transmission Error</strong><br><br>
+                    <strong>Troubleshooting:</strong>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li>Verify Azure Function URL is correct</li>
+                        <li>Check if the Azure Function is running</li>
+                        <li>Ensure CORS is properly configured</li>
+                        <li>Test network connectivity</li>
+                    </ul>
+                    
+                    <div class="code-block">
+                        <strong>Test with curl:</strong><br>
+                        curl -X POST "${functionUrl}" \\<br>
+                        &nbsp;&nbsp;-H "Content-Type: application/json" \\<br>
+                        &nbsp;&nbsp;-d '{"user_prompt": "${userPrompt.replace(/"/g, '\\"')}"}'
+                    </div>
+                `;
+            } finally {
+                // Reset button
+                sendButton.innerHTML = 'Send';
+                sendButton.disabled = false;
+            }
+        });
+
+        // Add enter key support for textarea
+        document.getElementById('user-prompt').addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                document.getElementById('send-button').click();
+            }
+        });
+
+        // Toggle system prompt visibility
+        document.getElementById('toggle-system-prompt').addEventListener('click', () => {
+            const container = document.getElementById('system-prompt-container');
+            const button = document.getElementById('toggle-system-prompt');
+            
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                container.classList.add('show');
+                container.classList.remove('hide');
+                button.textContent = 'Hide';
+            } else {
+                container.classList.add('hide');
+                container.classList.remove('show');
+                button.textContent = 'Show';
+                setTimeout(() => {
+                    container.style.display = 'none';
+                }, 300);
+            }
+        });
+
+        // Add some dynamic visual feedback
+        const panels = document.querySelectorAll('.panel');
+        panels.forEach(panel => {
+            panel.addEventListener('mouseenter', () => {
+                panel.style.borderColor = 'rgba(225, 112, 85, 0.5)';
+            });
+            
+            panel.addEventListener('mouseleave', () => {
+                panel.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+            });
+        });
+    </script>
+</body>
+</html>
