@@ -1,113 +1,292 @@
-<!-- [UNCHANGED HTML HEAD & STYLES ABOVE THIS LINE] -->
-<!-- Just replace the JS and add one new button below the history section -->
-
-<!-- Add this button under the history section in HTML -->
-<div style="text-align: right; margin-top: 10px;">
-    <button id="clear-history">🗑️ Clear History</button>
-</div>
-
-<!-- Add/Update this JS block at the bottom of your <script> tag -->
-<script>
-    const modeToggle = document.getElementById('mode-toggle');
-    const userPrompt = document.getElementById('user-prompt');
-    const jsonPreview = document.getElementById('json-preview');
-    const historyDiv = document.getElementById('history');
-    const clearHistoryBtn = document.getElementById('clear-history');
-
-    modeToggle.addEventListener('change', () => {
-        document.body.classList.toggle('dark-mode');
-        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-    });
-
-    // Preserve theme
-    if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark-mode');
-        modeToggle.checked = true;
-    }
-
-    // JSON preview
-    userPrompt.addEventListener('input', () => {
-        const preview = userPrompt.value.trim();
-        jsonPreview.textContent = preview
-            ? `{\n  "user_prompt": "${preview.replace(/"/g, '\\"')}"\n}`
-            : 'Waiting for input...';
-    });
-
-    // Load saved history
-    function loadHistory() {
-        const saved = JSON.parse(localStorage.getItem('commandHistory') || '[]');
-        saved.forEach(entry => addHistoryEntry(entry.text, entry.time, false));
-    }
-
-    function addHistoryEntry(text, time = new Date().toLocaleTimeString(), save = true) {
-        const entry = document.createElement('div');
-        entry.className = 'history-entry';
-        entry.innerHTML = `<span class="timestamp">[${time}]</span> ${text}`;
-        historyDiv.prepend(entry);
-
-        if (save) {
-            const saved = JSON.parse(localStorage.getItem('commandHistory') || '[]');
-            saved.unshift({ text, time });
-            localStorage.setItem('commandHistory', JSON.stringify(saved));
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LED & Servo Controller</title>
+    <style>
+        :root {
+            --bg-light: #fff9e6;
+            --bg-dark: #1f1f1f;
+            --text-light: #333;
+            --text-dark: #eee;
+            --card-light: #ffffff;
+            --card-dark: #2a2a2a;
+            --border-light: #ccc;
+            --border-dark: #444;
+            --success: #d4edda;
+            --error: #f8d7da;
         }
-    }
 
-    // Clear history
-    clearHistoryBtn.addEventListener('click', () => {
-        if (confirm('Clear command history?')) {
-            localStorage.removeItem('commandHistory');
-            historyDiv.innerHTML = '';
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            transition: background 0.3s, color 0.3s;
         }
-    });
 
-    // Send command
-    document.getElementById('send-button').addEventListener('click', async () => {
-        const systemPrompt = document.getElementById('system-prompt').value.trim();
-        const userPromptVal = userPrompt.value.trim();
-        const functionUrl = document.getElementById('function-url').value;
-        const responseDiv = document.getElementById('response');
-        const statusDiv = document.getElementById('status');
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
 
-        if (!userPromptVal) return alert("User prompt is required.");
+        .container {
+            max-width: 950px;
+            width: 100%;
+            background-color: var(--card-light);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s;
+        }
 
-        responseDiv.textContent = 'Sending request...';
-        statusDiv.className = 'status';
-        statusDiv.textContent = '';
+        body.dark-mode .container {
+            background-color: var(--card-dark);
+        }
 
-        try {
-            const response = await fetch(functionUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_prompt: userPromptVal,
-                    ...(systemPrompt ? { system_prompt: systemPrompt } : {})
-                })
-            });
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-            const text = await response.text();
-            responseDiv.textContent = text;
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-            if (response.ok) {
-                statusDiv.className = 'status success';
-                statusDiv.textContent = '✅ Command sent successfully!';
-                addHistoryEntry(userPromptVal);
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-family: monospace;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        body.dark-mode textarea, 
+        body.dark-mode input {
+            background-color: #333;
+            color: white;
+            border: 1px solid var(--border-dark);
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .output, .status, .history {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+
+        .output {
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            white-space: pre-wrap;
+            min-height: 80px;
+        }
+
+        body.dark-mode .output {
+            background-color: #444;
+            color: #eee;
+            border-color: var(--border-dark);
+        }
+
+        .status.success {
+            background-color: var(--success);
+            color: #2d7033;
+        }
+
+        .status.error {
+            background-color: var(--error);
+            color: #a94442;
+        }
+
+        .switch {
+            float: right;
+            margin-top: -10px;
+        }
+
+        .switch input {
+            display: none;
+        }
+
+        .switch-label {
+            cursor: pointer;
+            padding: 8px 16px;
+            background-color: #ddd;
+            border-radius: 8px;
+        }
+
+        body.dark-mode .switch-label {
+            background-color: #555;
+            color: white;
+        }
+
+        .section-title {
+            margin-top: 40px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .history {
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #f7f7f7;
+            border: 1px solid #ccc;
+        }
+
+        body.dark-mode .history {
+            background-color: #2c2c2c;
+            border-color: #444;
+        }
+
+        .history-entry {
+            border-bottom: 1px solid #ccc;
+            padding: 6px 0;
+        }
+
+        .timestamp {
+            color: gray;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="switch">
+            <label class="switch-label">
+                <input type="checkbox" id="mode-toggle"> Toggle Dark Mode
+            </label>
+        </div>
+
+        <h1>LED Blink & Servo Motor Controller</h1>
+
+        <div class="form-group">
+            <label for="system-prompt">System Prompt (Optional):</label>
+            <textarea id="system-prompt">You are a command interpreter for an IoT Raspberry Pi device that controls an LED and a servo motor...
+            </textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="user-prompt">User Prompt:</label>
+            <textarea id="user-prompt" placeholder="Enter a command like: Blink LED 3 times or Move servo to 45 degrees"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="function-url">Azure Function URL:</label>
+            <input type="text" id="function-url" value="https://raspizero-1.azurewebsites.net/api/http_trigger_pi">
+        </div>
+
+        <button id="send-button">Send Command</button>
+
+        <div class="section-title">Live JSON Preview</div>
+        <div id="json-preview" class="output">Waiting for input...</div>
+
+        <div class="section-title">Response</div>
+        <div id="response" class="output">Results will appear here...</div>
+        <div id="status" class="status"></div>
+
+        <div class="section-title">Command History</div>
+        <div id="history" class="history"></div>
+    </div>
+
+    <script>
+        const modeToggle = document.getElementById('mode-toggle');
+        modeToggle.addEventListener('change', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+
+        const userPrompt = document.getElementById('user-prompt');
+        const jsonPreview = document.getElementById('json-preview');
+
+        userPrompt.addEventListener('input', () => {
+            const preview = userPrompt.value.trim();
+            if (preview) {
+                jsonPreview.textContent = `{
+    "user_prompt": "${preview.replace(/"/g, '\\"')}"
+}`;
             } else {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                jsonPreview.textContent = 'Waiting for input...';
             }
-        } catch (err) {
-            responseDiv.textContent = 'Request failed';
-            statusDiv.className = 'status error';
-            statusDiv.innerHTML = `
-                <strong>Error: ${err.message}</strong><br>
-                <ul>
-                    <li>Check Azure Function URL</li>
-                    <li>Ensure Function App is running</li>
-                    <li>Verify CORS settings</li>
-                </ul>
-            `;
-        }
-    });
+        });
 
-    // Load history on page load
-    loadHistory();
-</script>
+        document.getElementById('send-button').addEventListener('click', async () => {
+            const systemPrompt = document.getElementById('system-prompt').value.trim();
+            const userPromptVal = userPrompt.value.trim();
+            const functionUrl = document.getElementById('function-url').value;
+            const responseDiv = document.getElementById('response');
+            const statusDiv = document.getElementById('status');
+            const historyDiv = document.getElementById('history');
+
+            if (!userPromptVal) return alert("User prompt is required.");
+
+            responseDiv.textContent = 'Sending request...';
+            statusDiv.className = 'status';
+            statusDiv.textContent = '';
+
+            try {
+                const response = await fetch(functionUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_prompt: userPromptVal,
+                        ...(systemPrompt ? { system_prompt: systemPrompt } : {})
+                    })
+                });
+
+                const text = await response.text();
+                responseDiv.textContent = text;
+
+                if (response.ok) {
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = '✅ Command sent successfully!';
+                    const timestamp = new Date().toLocaleTimeString();
+                    const entry = document.createElement('div');
+                    entry.className = 'history-entry';
+                    entry.innerHTML = `<span class="timestamp">[${timestamp}]</span> ${userPromptVal}`;
+                    historyDiv.prepend(entry);
+                } else {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+            } catch (err) {
+                responseDiv.textContent = 'Request failed';
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = `
+                    <strong>Error: ${err.message}</strong><br>
+                    <ul>
+                        <li>Check the Azure Function URL</li>
+                        <li>Ensure Function App is running</li>
+                        <li>Verify CORS settings</li>
+                    </ul>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
