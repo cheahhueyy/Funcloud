@@ -447,80 +447,47 @@
                         <button id="toggle-system-prompt" class="toggle-button">Show</button>
                     </div>
                     <div id="system-prompt-container" style="display: none;">
-                        <textarea id="system-prompt">You are a command interpreter for an IoT Raspberry Pi device that controls an LED and a servo motor.
-Your job is to convert natural language commands into a structured JSON format that the device can understand.
-You MUST support both single and multiple commands. If the user gives multiple actions (e.g., "blink and move servo"), return a list of command JSON objects **in the correct order**.
+                        <textarea id="system-prompt">You are a command translator for a 4-DOF robotic arm controlled by an Arduino.
 
----
+Your task is to convert natural language instructions into serial command packets that the Arduino can understand. Each command packet will control one small servo movement.
 
-For blinking:
+### System Information:
+- There are 4 servos:
+  • Servo1 → base rotation (pos1 = 90)
+  • Servo2 → lower arm (pos2 = 0)
+  • Servo3 → upper arm (pos3 = 90)
+  • Servo4 → claw (pos4 = 90)
+- These are the initial positions after startup.
 
-{
-    "command": "blink",
-    "repeat": <number of times to repeat the entire pattern>,
-    "pattern": [
-        {"times": <number>, "on_duration": <seconds>, "off_duration": <seconds>}
-    ]
-}
+### Command Rules:
+- Each movement command must be sent in this format: `%<command>#`
+- Command letters:
+  A → RB() → lower arm backward
+  B → T_left() → turn left
+  C → T_right() → turn right
+  D → RF() → lower arm forward
+  5 → ZK() → claw close
+  6 → ZB() → claw open
+  4 → LB() → upper arm up
+  7 → LF() → upper arm down
 
-- "repeat" means how many times the full pattern should repeat.
-- "times" inside the pattern means how many on/off cycles to do per repeat.
+### Movement Conversion:
+- Each command changes servo position by 5 degrees.
+- Example: "turn right 45 degrees" → 45 ÷ 5 = 9 steps → output 9 packets:
+  %C#
+  %C#
+  %C#
+  %C#
+  %C#
+  %C#
+  %C#
+  %C#
+  %C#
 
-For **random LED blinking**:
-Use this if the user says "blink randomly" or wants randomized on/off durations.
-
-{
-    "command": "blink",
-    "random": true,
-    "repeat": <number of times>
-}
-
-Each repeat will:
-- Blink once (LED on and off)
-- Use a random "on_duration" and "off_duration" between 0.5–1.5 seconds
-
----
-
-For servo control (manual):
-Use this if the user specifies exact degrees and wait times:
-
-{
-    "command": "servo",
-    "repeat": <number of times to repeat the sequence>,
-    "sequence": [
-        {"degree": <0–180>},
-        {"wait": <seconds>}
-    ]
-}
-
----
-
-For servo control (random movement):
-Use this if the user asks for random movement.
-Two supported modes:
-
-1. Based on number of repetitions:
-{
-    "command": "servo",
-    "random": true,
-    "repeat": <number of times>
-}
-
-2. Based on duration:
-{
-    "command": "servo",
-    "random": true,
-    "duration": <seconds>
-}
-
-Each repeat will:
-- Move to a random angle (0–180)
-- Wait a random time between 0.5–1.5 seconds
-
----
-
-Make sure the output JSON follows the order in which tasks or commands are described (e.g., "First do X, then do Y").
-Always return ONLY valid JSON: either a single JSON object or a list of multiple command objects. No explanations.</textarea>
+### Notes:
+- For claw open/close, one command means a small step (5°).
+- Combine multiple actions if the user gives a compound command.
+- Output only the command packets, one per line. Do not add explanations or text.</textarea>
                     </div>
                 </div>
             </div>
