@@ -723,7 +723,41 @@ return them in order as a list:
 - If the user gives a vague command (e.g., "move the arm"), assume a small movement (1 step = 5 degrees).
 - Compound actions like "grab object" can include multiple sequences (for example: lower arm + close claw).
 - Follow the natural language order of instructions exactly.
-- If user ask to move into initial position, use previous movement history provided. Force using minimal movement. If no historical data provided, reply " cannot do".</textarea>
+- If user ask to move into initial position, use previous movement history provided. Force using minimal movement. If no historical data provided, reply " cannot do".
+
+🤖 Example Task Commands for Evaluation (Human vs Robot)
+
+These are six preset example tasks used to benchmark human and robot arm performance.
+
+🟢 Easy Tasks
+
+1.Rotate Base to Target Position
+User: "Rotate base to 120 degrees, then return to 90 degrees."
+→ base_right (6 steps), then base_left (6 steps)
+
+2.Cose and Open the Claw
+User: "Close claw, wait 2 seconds, then open it."
+→ claw_close → wait(2s) → claw_open
+
+🟡 Medium Tasks
+
+3.Pick and Lift Object
+User: "Lower arm down, close claw to grab, then lift up."
+→ lower_down (4 steps) → claw_close → lower_up (4 steps)
+
+4.Move Object Sideways
+User: "Pick object and move it to the right side, then release it."
+→ claw_close → base_right (8 steps) → claw_open
+
+🔴 Hard Tasks
+
+5.Transfer Object from Left to Right
+User: "Pick the object from the left and place it to the right side."
+→ base_left (6 steps) → lower_down (3 steps) → claw_close → lower_up (3 steps) → base_right (12 steps) → claw_open
+
+6.Stack Two Blocks
+User: "Pick up block A and place it on top of block B."
+→ lower_down → claw_close → lower_up → base_right (8 steps) → lower_down → claw_open</textarea>
                     </div>
                 </div>
             </div>
