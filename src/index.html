@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Robot Arm Controller</title>
     <style>
-        /* Previous CSS styles remain the same */
         * {
             margin: 0;
             padding: 0;
@@ -431,7 +430,13 @@
             overflow-x: auto;
         }
 
-        /* New styles for chat history */
+        /* Chat history styles */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
         .chat-history {
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -442,6 +447,7 @@
             overflow-y: auto;
             font-family: 'JetBrains Mono', 'Courier New', monospace;
             font-size: 0.9rem;
+            flex-grow: 1;
         }
 
         .chat-message {
@@ -479,6 +485,59 @@
         .message-content {
             white-space: pre-wrap;
             word-break: break-word;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        .chat-input {
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 0.8rem;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .chat-send-button {
+            background: linear-gradient(135deg, #e17055 0%, #fd79a8 100%);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 80px;
+        }
+
+        .chat-send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(225, 112, 85, 0.4);
+        }
+
+        .chat-send-button:active {
+            transform: translateY(0);
+        }
+
+        .empty-chat {
+            text-align: center;
+            color: #636e72;
+            font-style: italic;
+            padding: 2rem;
         }
     </style>
 </head>
@@ -619,23 +678,22 @@ return them in order as a list:
                 </h2>
                 <p class="panel-subtitle">Command Interface</p>
                 
-                <!-- Chat History Display -->
-                <div id="chat-history" class="chat-history">
-                    <!-- Chat messages will be added here dynamically -->
-                </div>
-                
-                <div class="form-group">
-                    <label for="user-prompt">Natural Language Command</label>
-                    <textarea id="user-prompt" placeholder="Try: 'Blink 3 times fast' or 'Move servo to 90 degrees'">Move </textarea>
-                </div>
-                
-                <div class="button-container">
-                    <button id="reset-button" class="reset-button">
-                        Reset
-                    </button>
-                    <button id="send-button" class="send-button-small">
-                        Send
-                    </button>
+                <div class="chat-container">
+                    <!-- Chat History Display -->
+                    <div id="chat-history" class="chat-history">
+                        <div class="empty-chat">No commands yet. Start by typing a command below.</div>
+                    </div>
+                    
+                    <div class="chat-input-container">
+                        <input type="text" id="chat-input" class="chat-input" placeholder="Type your command here...">
+                        <button id="chat-send-button" class="chat-send-button">Send</button>
+                    </div>
+                    
+                    <div class="button-container">
+                        <button id="reset-button" class="reset-button">
+                            Reset Chat
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -653,13 +711,18 @@ return them in order as a list:
         // Chat history array to store user prompts and responses
         let chatHistory = [];
 
-        document.getElementById('send-button').addEventListener('click', async () => {
+        // Function to send command to the AI
+        async function sendCommand() {
             const systemPrompt = document.getElementById('system-prompt').value;
-            const userPrompt = document.getElementById('user-prompt').value;
+            const chatInput = document.getElementById('chat-input');
+            const userPrompt = chatInput.value.trim();
             const functionUrl = document.getElementById('function-url').value;
             const responseDiv = document.getElementById('response');
             const statusDiv = document.getElementById('status');
-            const sendButton = document.getElementById('send-button');
+            const sendButton = document.getElementById('chat-send-button');
+            
+            // Don't send if input is empty
+            if (!userPrompt) return;
             
             // Reset status
             statusDiv.className = 'status';
@@ -671,13 +734,25 @@ return them in order as a list:
             responseDiv.textContent = 'Transmitting to device...';
             
             try {
+                // Build the complete prompt with chat history
+                let completePrompt = userPrompt;
+                if (chatHistory.length > 0) {
+                    // Include previous conversation context
+                    completePrompt = "Previous commands and responses:\n";
+                    chatHistory.forEach(entry => {
+                        completePrompt += `User: ${entry.user}\n`;
+                        completePrompt += `Response: ${entry.response}\n\n`;
+                    });
+                    completePrompt += `Current command: ${userPrompt}`;
+                }
+                
                 const response = await fetch(functionUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        "user_prompt": userPrompt,
+                        "user_prompt": completePrompt,
                         ...(systemPrompt ? {"system_prompt": systemPrompt} : {})
                     })
                 });
@@ -724,10 +799,13 @@ return them in order as a list:
                 sendButton.innerHTML = 'Send';
                 sendButton.disabled = false;
                 
-                // Clear the user prompt textarea
-                document.getElementById('user-prompt').value = '';
+                // Clear the chat input
+                chatInput.value = '';
+                
+                // Focus back on the input for next command
+                chatInput.focus();
             }
-        });
+        }
 
         // Function to add message to chat history
         function addToChatHistory(userPrompt, response) {
@@ -746,6 +824,11 @@ return them in order as a list:
         function updateChatHistoryDisplay() {
             const chatHistoryDiv = document.getElementById('chat-history');
             chatHistoryDiv.innerHTML = '';
+            
+            if (chatHistory.length === 0) {
+                chatHistoryDiv.innerHTML = '<div class="empty-chat">No commands yet. Start by typing a command below.</div>';
+                return;
+            }
             
             // Add each message to the display
             chatHistory.forEach(entry => {
@@ -772,6 +855,16 @@ return them in order as a list:
             chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
         }
 
+        // Event listeners
+        document.getElementById('chat-send-button').addEventListener('click', sendCommand);
+
+        // Send on Enter key
+        document.getElementById('chat-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                sendCommand();
+            }
+        });
+
         // Reset button functionality
         document.getElementById('reset-button').addEventListener('click', () => {
             // Clear chat history
@@ -787,13 +880,6 @@ return them in order as a list:
             const statusDiv = document.getElementById('status');
             statusDiv.className = 'status';
             statusDiv.classList.remove('show');
-        });
-
-        // Add enter key support for textarea
-        document.getElementById('user-prompt').addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'Enter') {
-                document.getElementById('send-button').click();
-            }
         });
 
         // Toggle system prompt visibility
@@ -827,6 +913,9 @@ return them in order as a list:
                 panel.style.borderColor = 'rgba(0, 0, 0, 0.1)';
             });
         });
+
+        // Focus on chat input when page loads
+        document.getElementById('chat-input').focus();
     </script>
 </body>
 </html>
