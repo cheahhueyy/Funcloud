@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Robot Arm Controller</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -11,19 +12,32 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --dark: #0f172a;
+            --darker: #0a0f1c;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-dark: #334155;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%);
-            color: #ffffff;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            color: var(--light);
             min-height: 100vh;
-            overflow-x: hidden;
+            line-height: 1.6;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
-            position: relative;
         }
 
         .header {
@@ -33,90 +47,97 @@
         }
 
         .title {
-            font-size: 3.5rem;
+            font-size: 3.2rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #e17055 0%, #fd79a8 50%, #6c5ce7 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes glow {
-            from { filter: drop-shadow(0 0 20px rgba(225, 112, 85, 0.3)); }
-            to { filter: drop-shadow(0 0 30px rgba(253, 121, 168, 0.4)); }
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
         }
 
         .subtitle {
-            font-size: 1.2rem;
-            color: #636e72;
+            font-size: 1.1rem;
+            color: var(--gray);
             margin-bottom: 2rem;
+            font-weight: 500;
         }
 
-        .led-indicator {
-            width: 20px;
-            height: 20px;
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #ff4444, #ff8888);
-            display: inline-block;
-            margin: 0 10px;
-            box-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
+            background-color: var(--success);
             animation: pulse 2s infinite;
         }
 
+        .status-dot.offline {
+            background-color: var(--error);
+        }
+
         @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.7; }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .main-content {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1.2fr;
             gap: 2rem;
             margin-bottom: 2rem;
         }
 
         .panel {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(15, 23, 42, 0.7);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
             padding: 2rem;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s;
-        }
-
-        .panel:hover::before {
-            left: 100%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         .panel:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            border-color: rgba(0, 212, 255, 0.3);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
         }
 
         .panel-title {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            margin-bottom: 1.5rem;
-            color: #00d4ff;
+            color: var(--light);
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        .panel-title i {
+            color: var(--primary);
         }
 
         .form-group {
@@ -127,146 +148,111 @@
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 600;
-            color: #e0e0e0;
+            color: var(--light);
             font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        textarea, input[type="text"] {
+        .input-group {
+            position: relative;
+        }
+
+        input, textarea {
             width: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 1rem;
-            color: #ffffff;
-            font-family: 'JetBrains Mono', 'Courier New', monospace;
-            font-size: 0.9rem;
+            color: var(--light);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
-            resize: vertical;
         }
 
         textarea {
             min-height: 120px;
+            resize: vertical;
         }
 
-        textarea:focus, input[type="text"]:focus {
+        input:focus, textarea:focus {
             outline: none;
-            border-color: #00d4ff;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
-            background: rgba(0, 0, 0, 0.5);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            background: rgba(30, 41, 59, 0.8);
         }
 
-        .panel-subtitle {
-            font-size: 0.9rem;
-            color: #a0a0a0;
-            margin-bottom: 1.5rem;
-            margin-top: -1rem;
-            font-weight: 400;
-            text-transform: none;
-            letter-spacing: 0;
-        }
-
-        .button-container {
+        .button-group {
             display: flex;
+            gap: 0.75rem;
             justify-content: flex-end;
-            margin-top: 1rem;
-            gap: 10px;
+            margin-top: 1.5rem;
         }
 
-        .send-button-small {
-            background: linear-gradient(135deg, #e17055 0%, #fd79a8 100%);
-            color: white;
-            border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 25px;
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            min-width: 80px;
-        }
-
-        .send-button-small::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .send-button-small:hover::before {
-            left: 100%;
-        }
-
-        .send-button-small:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(225, 112, 85, 0.4);
-        }
-
-        .send-button-small:active {
-            transform: translateY(0);
-        }
-
-        .reset-button {
-            background: linear-gradient(135deg, #636e72 0%, #2d3436 100%);
-            color: white;
             border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            min-width: 80px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .reset-button:hover {
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(99, 110, 114, 0.4);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
         }
 
-        .config-section {
-            grid-column: 1 / -1;
+        .btn-secondary {
+            background: rgba(30, 41, 59, 0.7);
+            color: var(--light);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.3);
         }
 
         .toggle-button {
-            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
-            color: white;
-            border: none;
+            background: rgba(30, 41, 59, 0.7);
+            color: var(--light);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 0.5rem 1rem;
-            border-radius: 20px;
+            border-radius: 8px;
             font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .toggle-button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
-        }
-
-        .toggle-button:active {
-            transform: translateY(0);
+            background: rgba(30, 41, 59, 0.9);
         }
 
         #system-prompt-container {
             transition: all 0.3s ease;
             overflow: hidden;
+            margin-top: 1rem;
         }
 
         #system-prompt-container.show {
@@ -282,7 +268,7 @@
             from {
                 opacity: 0;
                 max-height: 0;
-                transform: translateY(-20px);
+                transform: translateY(-10px);
             }
             to {
                 opacity: 1;
@@ -300,33 +286,49 @@
             to {
                 opacity: 0;
                 max-height: 0;
-                transform: translateY(-20px);
+                transform: translateY(-10px);
             }
         }
 
+        .response-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .response-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
         .response-title {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            margin-bottom: 1rem;
-            color: #00d4ff;
+            color: var(--light);
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
+        .response-title i {
+            color: var(--secondary);
+        }
+
         .output {
-            background: rgba(0, 0, 0, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 1.5rem;
             font-family: 'JetBrains Mono', 'Courier New', monospace;
             font-size: 0.9rem;
             white-space: pre-wrap;
-            min-height: 120px;
-            color: #e0e0e0;
+            min-height: 200px;
+            color: var(--light);
+            flex-grow: 1;
+            overflow-y: auto;
             transition: all 0.3s ease;
-            position: relative;
-            overflow-x: auto;
         }
 
         .status {
@@ -337,6 +339,9 @@
             transition: all 0.3s ease;
             opacity: 0;
             transform: translateY(10px);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
         .status.show {
@@ -345,26 +350,25 @@
         }
 
         .success {
-            background: linear-gradient(135deg, rgba(46, 204, 113, 0.2), rgba(46, 204, 113, 0.1));
-            border: 1px solid rgba(46, 204, 113, 0.3);
-            color: #27ae60;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--success);
         }
 
         .error {
-            background: linear-gradient(135deg, rgba(231, 76, 60, 0.2), rgba(231, 76, 60, 0.1));
-            border: 1px solid rgba(231, 76, 60, 0.3);
-            color: #e74c3c;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--error);
         }
 
         .loading {
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(225, 112, 85, 0.3);
+            border: 3px solid rgba(99, 102, 241, 0.3);
             border-radius: 50%;
-            border-top-color: #e17055;
+            border-top-color: var(--primary);
             animation: spin 1s linear infinite;
-            margin-right: 10px;
         }
 
         @keyframes spin {
@@ -372,7 +376,7 @@
         }
 
         .floating-icons {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -384,28 +388,21 @@
 
         .floating-icon {
             position: absolute;
-            opacity: 0.1;
-            animation: float 15s linear infinite;
+            opacity: 0.03;
+            animation: float 20s linear infinite;
+            font-size: 24px;
         }
 
         @keyframes float {
             0% {
                 transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.1;
-            }
-            90% {
-                opacity: 0.1;
             }
             100% {
                 transform: translateY(-100px) rotate(360deg);
-                opacity: 0;
             }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .main-content {
                 grid-template-columns: 1fr;
             }
@@ -415,22 +412,11 @@
             }
             
             .container {
-                padding: 1rem;
+                padding: 1.5rem;
             }
         }
 
-        .code-block {
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            overflow-x: auto;
-        }
-
-        /* Chat history styles */
+        /* Chat styles */
         .chat-container {
             display: flex;
             flex-direction: column;
@@ -438,146 +424,283 @@
         }
 
         .chat-history {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(30, 41, 59, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            max-height: 300px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            height: 350px;
             overflow-y: auto;
-            font-family: 'JetBrains Mono', 'Courier New', monospace;
-            font-size: 0.9rem;
-            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
         .chat-message {
-            margin-bottom: 0.8rem;
-            padding: 0.5rem;
-            border-radius: 8px;
+            display: flex;
+            max-width: 85%;
+            animation: messageAppear 0.3s ease-out;
+        }
+
+        @keyframes messageAppear {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .user-message {
-            background: rgba(0, 212, 255, 0.1);
-            border-left: 3px solid #00d4ff;
+            align-self: flex-end;
         }
 
         .response-message {
-            background: rgba(46, 204, 113, 0.1);
-            border-left: 3px solid #27ae60;
+            align-self: flex-start;
         }
 
-        .message-label {
-            font-weight: bold;
-            margin-bottom: 0.3rem;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .message-bubble {
+            padding: 0.75rem 1rem;
+            border-radius: 18px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            position: relative;
         }
 
-        .user-label {
-            color: #00d4ff;
+        .user-message .message-bubble {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-bottom-right-radius: 6px;
         }
 
-        .response-label {
-            color: #27ae60;
+        .response-message .message-bubble {
+            background: rgba(30, 41, 59, 0.8);
+            color: var(--light);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom-left-radius: 6px;
         }
 
-        .message-content {
-            white-space: pre-wrap;
-            word-break: break-word;
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 0.25rem;
+            text-align: right;
+        }
+
+        .response-message .message-time {
+            text-align: left;
+        }
+
+        .empty-chat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--gray);
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .empty-chat i {
+            font-size: 2rem;
+            opacity: 0.5;
         }
 
         .chat-input-container {
             display: flex;
-            gap: 10px;
-            margin-top: 1rem;
+            gap: 0.75rem;
         }
 
         .chat-input {
             flex-grow: 1;
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 0.8rem;
-            color: #ffffff;
+            padding: 0.9rem 1rem;
+            color: var(--light);
             font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
         }
 
         .chat-input:focus {
             outline: none;
-            border-color: #00d4ff;
-            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
         .chat-send-button {
-            background: linear-gradient(135deg, #e17055 0%, #fd79a8 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             border: none;
-            padding: 0.6rem 1.2rem;
             border-radius: 12px;
-            font-size: 0.9rem;
-            font-weight: 600;
+            width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            min-width: 80px;
         }
 
         .chat-send-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(225, 112, 85, 0.4);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
         }
 
         .chat-send-button:active {
             transform: translateY(0);
         }
 
-        .empty-chat {
-            text-align: center;
-            color: #636e72;
-            font-style: italic;
-            padding: 2rem;
+        .command-examples {
+            margin-top: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .example-chip {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .example-chip:hover {
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--light);
+            border-color: var(--primary);
+        }
+
+        .robot-visualization {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(30, 41, 59, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .robot-arm {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .robot-base {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 20px;
+            background: var(--gray-dark);
+            border-radius: 4px 4px 0 0;
+        }
+
+        .robot-segment {
+            position: absolute;
+            background: linear-gradient(to right, var(--gray), var(--gray-dark));
+            border-radius: 4px;
+            transform-origin: bottom center;
+        }
+
+        .segment-1 {
+            width: 12px;
+            height: 80px;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .segment-2 {
+            width: 10px;
+            height: 70px;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) rotate(30deg);
+        }
+
+        .segment-3 {
+            width: 8px;
+            height: 60px;
+            bottom: 170px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-15deg);
+        }
+
+        .robot-claw {
+            position: absolute;
+            width: 20px;
+            height: 15px;
+            background: var(--primary);
+            border-radius: 4px;
+            bottom: 230px;
+            left: 50%;
+            transform: translateX(-50%);
         }
     </style>
 </head>
 <body>
     <div class="floating-icons">
-        <div class="floating-icon" style="left: 10%; animation-delay: 0s; font-size: 30px;">💡</div>
-        <div class="floating-icon" style="left: 20%; animation-delay: 2s; font-size: 25px;">⚡</div>
-        <div class="floating-icon" style="left: 30%; animation-delay: 4s; font-size: 35px;">🔧</div>
-        <div class="floating-icon" style="left: 40%; animation-delay: 6s; font-size: 30px;">🤖</div>
-        <div class="floating-icon" style="left: 50%; animation-delay: 8s; font-size: 25px;">💡</div>
-        <div class="floating-icon" style="left: 60%; animation-delay: 10s; font-size: 30px;">⚡</div>
-        <div class="floating-icon" style="left: 70%; animation-delay: 12s; font-size: 35px;">🔧</div>
-        <div class="floating-icon" style="left: 80%; animation-delay: 14s; font-size: 25px;">🤖</div>
-        <div class="floating-icon" style="left: 90%; animation-delay: 16s; font-size: 30px;">💡</div>
+        <div class="floating-icon" style="left: 10%; animation-delay: 0s;"><i class="fas fa-robot"></i></div>
+        <div class="floating-icon" style="left: 20%; animation-delay: 2s;"><i class="fas fa-cog"></i></div>
+        <div class="floating-icon" style="left: 30%; animation-delay: 4s;"><i class="fas fa-microchip"></i></div>
+        <div class="floating-icon" style="left: 40%; animation-delay: 6s;"><i class="fas fa-code"></i></div>
+        <div class="floating-icon" style="left: 50%; animation-delay: 8s;"><i class="fas fa-brain"></i></div>
+        <div class="floating-icon" style="left: 60%; animation-delay: 10s;"><i class="fas fa-robot"></i></div>
+        <div class="floating-icon" style="left: 70%; animation-delay: 12s;"><i class="fas fa-cog"></i></div>
+        <div class="floating-icon" style="left: 80%; animation-delay: 14s;"><i class="fas fa-microchip"></i></div>
+        <div class="floating-icon" style="left: 90%; animation-delay: 16s;"><i class="fas fa-code"></i></div>
     </div>
 
     <div class="container">
         <header class="header">
             <h1 class="title">Robot Arm Controller</h1>
-            <p class="subtitle">Advanced IoT Device Command Interface</p>
-            <div>
-                <span class="led-indicator"></span>
-                <span class="led-indicator" style="animation-delay: 0.5s;"></span>
-                <span class="led-indicator" style="animation-delay: 1s;"></span>
+            <p class="subtitle">Advanced AI-Powered Control Interface</p>
+            <div class="status-indicator">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>System Online</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>AI Connected</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>Arm Ready</span>
+                </div>
             </div>
         </header>
 
         <div class="main-content">
-            <!-- URL and System Prompt at top -->
-            <div class="panel config-section">
-                <div class="form-group">
-                    <label for="function-url">Azure Function URL</label>
-                    <input type="text" id="function-url" 
-                           value="https://raspizero-1.azurewebsites.net/api/http_trigger_pi">
+            <!-- Configuration Panel -->
+            <div class="panel config-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title"><i class="fas fa-sliders-h"></i> Configuration</h2>
                 </div>
                 
                 <div class="form-group">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
-                        <label for="system-prompt" style="margin-bottom: 0;">System Prompt (Optional):</label>
-                        <button id="toggle-system-prompt" class="toggle-button">Show</button>
+                    <label for="function-url">Azure Function URL</label>
+                    <div class="input-group">
+                        <input type="text" id="function-url" 
+                               value="https://raspizero-1.azurewebsites.net/api/http_trigger_pi">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <label for="system-prompt" style="margin-bottom: 0;">System Instructions</label>
+                        <button id="toggle-system-prompt" class="toggle-button">Show Instructions</button>
                     </div>
                     <div id="system-prompt-container" style="display: none;">
                         <textarea id="system-prompt">You are a command interpreter for a cloud-connected Raspberry Pi device that controls a 4-DOF robotic arm through an Arduino.
@@ -669,40 +792,68 @@ return them in order as a list:
 - If user ask to move into initial position, use previous movement history provided. Force using minimal movement. If no historical data provided, reply " cannot do".</textarea>
                     </div>
                 </div>
+
+                <div class="robot-visualization">
+                    <div class="robot-arm">
+                        <div class="robot-base"></div>
+                        <div class="robot-segment segment-1"></div>
+                        <div class="robot-segment segment-2"></div>
+                        <div class="robot-segment segment-3"></div>
+                        <div class="robot-claw"></div>
+                    </div>
+                </div>
             </div>
 
-            <!-- User Prompt and Response side by side -->
-            <div class="panel user-prompt-panel">
-                <h2 class="panel-title">
-                    👤 User Prompt
-                </h2>
-                <p class="panel-subtitle">Command Interface</p>
+            <!-- Chat Panel -->
+            <div class="panel chat-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title"><i class="fas fa-comments"></i> Command Interface</h2>
+                </div>
                 
                 <div class="chat-container">
-                    <!-- Chat History Display -->
                     <div id="chat-history" class="chat-history">
-                        <div class="empty-chat">No commands yet. Start by typing a command below.</div>
+                        <div class="empty-chat">
+                            <i class="fas fa-robot"></i>
+                            <div>Send a command to control the robot arm</div>
+                        </div>
+                    </div>
+                    
+                    <div class="command-examples">
+                        <div class="example-chip">Move base left 30 degrees</div>
+                        <div class="example-chip">Open claw then lift arm</div>
+                        <div class="example-chip">Return to initial position</div>
+                        <div class="example-chip">Grab object and move right</div>
                     </div>
                     
                     <div class="chat-input-container">
                         <input type="text" id="chat-input" class="chat-input" placeholder="Type your command here...">
-                        <button id="chat-send-button" class="chat-send-button">Send</button>
+                        <button id="chat-send-button" class="chat-send-button">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
                     </div>
                     
-                    <div class="button-container">
-                        <button id="reset-button" class="reset-button">
-                            Reset Chat
+                    <div class="button-group">
+                        <button id="reset-button" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Clear Chat
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div class="panel device-response-panel">
-                <h2 class="response-title">
-                    🔧 Device Response
-                </h2>
-                <div id="response" class="output">Waiting for command...</div>
-                <div id="status" class="status"></div>
+            <!-- Response Panel -->
+            <div class="panel response-panel">
+                <div class="response-container">
+                    <div class="response-header">
+                        <h2 class="response-title"><i class="fas fa-terminal"></i> Device Response</h2>
+                    </div>
+                    
+                    <div id="response" class="output">Waiting for command...</div>
+                    
+                    <div id="status" class="status">
+                        <i class="fas fa-info-circle"></i>
+                        <span>System ready. Send a command to begin.</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -724,14 +875,15 @@ return them in order as a list:
             // Don't send if input is empty
             if (!userPrompt) return;
             
-            // Reset status
+            // Update status
             statusDiv.className = 'status';
-            statusDiv.classList.remove('show');
+            statusDiv.innerHTML = '<div class="loading"></div><span>Processing command...</span>';
+            statusDiv.classList.add('show');
             
             // Show loading state
-            sendButton.innerHTML = '<span class="loading"></span>Sending...';
+            sendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             sendButton.disabled = true;
-            responseDiv.textContent = 'Transmitting to device...';
+            responseDiv.textContent = 'Sending command to device...';
             
             try {
                 // Build the complete prompt with chat history
@@ -768,35 +920,19 @@ return them in order as a list:
                 addToChatHistory(userPrompt, data);
                 
                 statusDiv.className = 'status success show';
-                statusDiv.innerHTML = '✅ Command executed successfully!';
+                statusDiv.innerHTML = '<i class="fas fa-check-circle"></i><span>Command executed successfully!</span>';
                 
             } catch (error) {
-                responseDiv.textContent = `❌ Connection Failed\n\nError: ${error.message}`;
+                responseDiv.textContent = `Error: ${error.message}`;
                 
                 // Add error to chat history
                 addToChatHistory(userPrompt, `Error: ${error.message}`);
                 
                 statusDiv.className = 'status error show';
-                statusDiv.innerHTML = `
-                    <strong>⚠️ Transmission Error</strong><br><br>
-                    <strong>Troubleshooting:</strong>
-                    <ul style="margin: 10px 0; padding-left: 20px;">
-                        <li>Verify Azure Function URL is correct</li>
-                        <li>Check if the Azure Function is running</li>
-                        <li>Ensure CORS is properly configured</li>
-                        <li>Test network connectivity</li>
-                    </ul>
-                    
-                    <div class="code-block">
-                        <strong>Test with curl:</strong><br>
-                        curl -X POST "${functionUrl}" \\<br>
-                        &nbsp;&nbsp;-H "Content-Type: application/json" \\<br>
-                        &nbsp;&nbsp;-d '{"user_prompt": "${userPrompt.replace(/"/g, '\\"')}"}'
-                    </div>
-                `;
+                statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i><span>Failed to execute command</span>';
             } finally {
                 // Reset button
-                sendButton.innerHTML = 'Send';
+                sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>';
                 sendButton.disabled = false;
                 
                 // Clear the chat input
@@ -813,7 +949,7 @@ return them in order as a list:
             chatHistory.push({
                 user: userPrompt,
                 response: response,
-                timestamp: new Date().toLocaleTimeString()
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             });
             
             // Update the chat history display
@@ -826,7 +962,12 @@ return them in order as a list:
             chatHistoryDiv.innerHTML = '';
             
             if (chatHistory.length === 0) {
-                chatHistoryDiv.innerHTML = '<div class="empty-chat">No commands yet. Start by typing a command below.</div>';
+                chatHistoryDiv.innerHTML = `
+                    <div class="empty-chat">
+                        <i class="fas fa-robot"></i>
+                        <div>Send a command to control the robot arm</div>
+                    </div>
+                `;
                 return;
             }
             
@@ -836,8 +977,10 @@ return them in order as a list:
                 const userMessageDiv = document.createElement('div');
                 userMessageDiv.className = 'chat-message user-message';
                 userMessageDiv.innerHTML = `
-                    <div class="message-label user-label">Me (${entry.timestamp}):</div>
-                    <div class="message-content">${entry.user}</div>
+                    <div class="message-bubble">
+                        ${entry.user}
+                        <div class="message-time">${entry.timestamp}</div>
+                    </div>
                 `;
                 chatHistoryDiv.appendChild(userMessageDiv);
                 
@@ -845,8 +988,10 @@ return them in order as a list:
                 const responseMessageDiv = document.createElement('div');
                 responseMessageDiv.className = 'chat-message response-message';
                 responseMessageDiv.innerHTML = `
-                    <div class="message-label response-label">Response:</div>
-                    <div class="message-content">${entry.response}</div>
+                    <div class="message-bubble">
+                        ${entry.response}
+                        <div class="message-time">${entry.timestamp}</div>
+                    </div>
                 `;
                 chatHistoryDiv.appendChild(responseMessageDiv);
             });
@@ -865,6 +1010,14 @@ return them in order as a list:
             }
         });
 
+        // Example chip click handlers
+        document.querySelectorAll('.example-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.getElementById('chat-input').value = chip.textContent;
+                document.getElementById('chat-input').focus();
+            });
+        });
+
         // Reset button functionality
         document.getElementById('reset-button').addEventListener('click', () => {
             // Clear chat history
@@ -876,10 +1029,11 @@ return them in order as a list:
             // Clear the response area
             document.getElementById('response').textContent = 'Waiting for command...';
             
-            // Clear any status messages
+            // Reset status message
             const statusDiv = document.getElementById('status');
             statusDiv.className = 'status';
-            statusDiv.classList.remove('show');
+            statusDiv.innerHTML = '<i class="fas fa-info-circle"></i><span>System ready. Send a command to begin.</span>';
+            statusDiv.classList.add('show');
         });
 
         // Toggle system prompt visibility
@@ -891,27 +1045,15 @@ return them in order as a list:
                 container.style.display = 'block';
                 container.classList.add('show');
                 container.classList.remove('hide');
-                button.textContent = 'Hide';
+                button.textContent = 'Hide Instructions';
             } else {
                 container.classList.add('hide');
                 container.classList.remove('show');
-                button.textContent = 'Show';
+                button.textContent = 'Show Instructions';
                 setTimeout(() => {
                     container.style.display = 'none';
                 }, 300);
             }
-        });
-
-        // Add some dynamic visual feedback
-        const panels = document.querySelectorAll('.panel');
-        panels.forEach(panel => {
-            panel.addEventListener('mouseenter', () => {
-                panel.style.borderColor = 'rgba(225, 112, 85, 0.5)';
-            });
-            
-            panel.addEventListener('mouseleave', () => {
-                panel.style.borderColor = 'rgba(0, 0, 0, 0.1)';
-            });
         });
 
         // Focus on chat input when page loads
