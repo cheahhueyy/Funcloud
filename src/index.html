@@ -98,10 +98,19 @@
         }
 
         .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
+            display: flex;
+            flex-direction: column;
             gap: 2rem;
-            margin-bottom: 2rem;
+        }
+
+        .config-section {
+            margin-bottom: 1rem;
+        }
+
+        .interface-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
         }
 
         .panel {
@@ -112,6 +121,7 @@
             padding: 2rem;
             transition: all 0.3s ease;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            height: fit-content;
         }
 
         .panel:hover {
@@ -296,13 +306,6 @@
             height: 100%;
         }
 
-        .response-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-        }
-
         .response-title {
             font-size: 1.4rem;
             font-weight: 700;
@@ -310,6 +313,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-bottom: 1.5rem;
         }
 
         .response-title i {
@@ -324,7 +328,7 @@
             font-family: 'JetBrains Mono', 'Courier New', monospace;
             font-size: 0.9rem;
             white-space: pre-wrap;
-            min-height: 200px;
+            min-height: 300px;
             color: var(--light);
             flex-grow: 1;
             overflow-y: auto;
@@ -403,7 +407,7 @@
         }
 
         @media (max-width: 1024px) {
-            .main-content {
+            .interface-section {
                 grid-template-columns: 1fr;
             }
             
@@ -577,76 +581,6 @@
             color: var(--light);
             border-color: var(--primary);
         }
-
-        .robot-visualization {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 1.5rem;
-            padding: 1.5rem;
-            background: rgba(30, 41, 59, 0.3);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .robot-arm {
-            position: relative;
-            width: 200px;
-            height: 200px;
-        }
-
-        .robot-base {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 20px;
-            background: var(--gray-dark);
-            border-radius: 4px 4px 0 0;
-        }
-
-        .robot-segment {
-            position: absolute;
-            background: linear-gradient(to right, var(--gray), var(--gray-dark));
-            border-radius: 4px;
-            transform-origin: bottom center;
-        }
-
-        .segment-1 {
-            width: 12px;
-            height: 80px;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .segment-2 {
-            width: 10px;
-            height: 70px;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%) rotate(30deg);
-        }
-
-        .segment-3 {
-            width: 8px;
-            height: 60px;
-            bottom: 170px;
-            left: 50%;
-            transform: translateX(-50%) rotate(-15deg);
-        }
-
-        .robot-claw {
-            position: absolute;
-            width: 20px;
-            height: 15px;
-            background: var(--primary);
-            border-radius: 4px;
-            bottom: 230px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
     </style>
 </head>
 <body>
@@ -684,7 +618,7 @@
 
         <div class="main-content">
             <!-- Configuration Panel -->
-            <div class="panel config-panel">
+            <div class="panel config-section">
                 <div class="panel-header">
                     <h2 class="panel-title"><i class="fas fa-sliders-h"></i> Configuration</h2>
                 </div>
@@ -792,66 +726,57 @@ return them in order as a list:
 - If user ask to move into initial position, use previous movement history provided. Force using minimal movement. If no historical data provided, reply " cannot do".</textarea>
                     </div>
                 </div>
-
-                <div class="robot-visualization">
-                    <div class="robot-arm">
-                        <div class="robot-base"></div>
-                        <div class="robot-segment segment-1"></div>
-                        <div class="robot-segment segment-2"></div>
-                        <div class="robot-segment segment-3"></div>
-                        <div class="robot-claw"></div>
-                    </div>
-                </div>
             </div>
 
-            <!-- Chat Panel -->
-            <div class="panel chat-panel">
-                <div class="panel-header">
-                    <h2 class="panel-title"><i class="fas fa-comments"></i> Command Interface</h2>
-                </div>
-                
-                <div class="chat-container">
-                    <div id="chat-history" class="chat-history">
-                        <div class="empty-chat">
-                            <i class="fas fa-robot"></i>
-                            <div>Send a command to control the robot arm</div>
+            <!-- Interface Section -->
+            <div class="interface-section">
+                <!-- Command Interface Panel -->
+                <div class="panel chat-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title"><i class="fas fa-comments"></i> Command Interface</h2>
+                    </div>
+                    
+                    <div class="chat-container">
+                        <div id="chat-history" class="chat-history">
+                            <div class="empty-chat">
+                                <i class="fas fa-robot"></i>
+                                <div>Send a command to control the robot arm</div>
+                            </div>
+                        </div>
+                        
+                        <div class="command-examples">
+                            <div class="example-chip">Move base left 30 degrees</div>
+                            <div class="example-chip">Open claw then lift arm</div>
+                            <div class="example-chip">Return to initial position</div>
+                            <div class="example-chip">Grab object and move right</div>
+                        </div>
+                        
+                        <div class="chat-input-container">
+                            <input type="text" id="chat-input" class="chat-input" placeholder="Type your command here...">
+                            <button id="chat-send-button" class="chat-send-button">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button id="reset-button" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Clear Chat
+                            </button>
                         </div>
                     </div>
-                    
-                    <div class="command-examples">
-                        <div class="example-chip">Move base left 30 degrees</div>
-                        <div class="example-chip">Open claw then lift arm</div>
-                        <div class="example-chip">Return to initial position</div>
-                        <div class="example-chip">Grab object and move right</div>
-                    </div>
-                    
-                    <div class="chat-input-container">
-                        <input type="text" id="chat-input" class="chat-input" placeholder="Type your command here...">
-                        <button id="chat-send-button" class="chat-send-button">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="button-group">
-                        <button id="reset-button" class="btn btn-danger">
-                            <i class="fas fa-trash"></i> Clear Chat
-                        </button>
-                    </div>
                 </div>
-            </div>
 
-            <!-- Response Panel -->
-            <div class="panel response-panel">
-                <div class="response-container">
-                    <div class="response-header">
+                <!-- Device Response Panel -->
+                <div class="panel response-panel">
+                    <div class="response-container">
                         <h2 class="response-title"><i class="fas fa-terminal"></i> Device Response</h2>
-                    </div>
-                    
-                    <div id="response" class="output">Waiting for command...</div>
-                    
-                    <div id="status" class="status">
-                        <i class="fas fa-info-circle"></i>
-                        <span>System ready. Send a command to begin.</span>
+                        
+                        <div id="response" class="output">Waiting for command...</div>
+                        
+                        <div id="status" class="status">
+                            <i class="fas fa-info-circle"></i>
+                            <span>System ready. Send a command to begin.</span>
+                        </div>
                     </div>
                 </div>
             </div>
