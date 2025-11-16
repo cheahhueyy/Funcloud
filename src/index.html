@@ -649,9 +649,9 @@ Return a list of JSON command objects in the correct order. That is also a comma
 Each action corresponds to one Arduino serial command packet: 
 
 | Servo | Function     | Arduino Command | JSON "action"   |
-|--------|---------------|-----------------|-----------------|
+|-----------|---------------|---------------------------|----------------------|
 | Servo1 | Base rotation | %B# → left, %C# → right | "base_left", "base_right" |
-| Servo2 | Lower arm     | %A# → backward (up), %D# → forward (down) | "lower_up", "lower_down" |
+| Servo2 | Lower arm     | %D# → backward (up), %A# → forward (down) | "lower_up", "lower_down" |
 | Servo3 | Upper arm     | %4# → up, %7# → down | "upper_up", "upper_down" |
 | Servo4 | Claw          | %5# → close, %6# → open | "claw_close", "claw_open" |
 
@@ -724,6 +724,8 @@ return them in order as a list:
 - Compound actions like "grab object" can include multiple sequences (for example: lower arm + close claw).
 - Follow the natural language order of instructions exactly.
 - If user ask to move into initial position, use previous movement history provided. Force using minimal movement. If no historical data provided, reply " cannot do".
+- If user ask "close the claw" means that servo 4 = 20 degree. If "Open claw" means that servo 4 = 90 degree.
+- If user say "backward" or "forward" means 'lower_up' and 'lower_down' ; when user say "up" or "down" means 'upper_up' or 'upper_down'.
 
 🤖 Example Task Commands for Evaluation (Human vs Robot)
 
@@ -731,19 +733,19 @@ These are six preset example tasks used to benchmark human and robot arm perform
 
 🟢 Easy Tasks
 
-1.Rotate Base to Target Position
-User: "Rotate base to 120 degrees, then return to 90 degrees."
-→ base_right (6 steps), then base_left (6 steps)
+1. Rotate base to 180°, then return back to 90°
+User: “Rotate base to 180 degrees, then return to 90 degrees.”
+→ base_right (18 steps), then base_left (18 steps)
 
 2.Cose and Open the Claw
-User: "Close claw, wait 2 seconds, then open it."
-→ claw_close → wait(2s) → claw_open
+User: “Close the claw fully, then open it again.”
+→ claw_close →  claw_open
 
 🟡 Medium Tasks
 
-3.Pick and Lift Object
-User: "Lower arm down, close claw to grab, then lift up."
-→ lower_down (4 steps) → claw_close → lower_up (4 steps)
+3. Lower arm down, close claw to grab paper, lift up and release it.
+Paper location:  forward 30°
+→ lower_down (6 steps)→ claw_close→ lower_up (6 steps)→ claw_open 
 
 4.Move Object Sideways
 User: "Pick object and move it to the right side, then release it."
@@ -751,13 +753,17 @@ User: "Pick object and move it to the right side, then release it."
 
 🔴 Hard Tasks
 
-5.Transfer Object from Left to Right
-User: "Pick the object from the left and place it to the right side."
-→ base_left (6 steps) → lower_down (3 steps) → claw_close → lower_up (3 steps) → base_right (12 steps) → claw_open
+5.Pick block A and place it to the box (right side)
+User: "Pick block A and place it to the box."
+Block A position: down 80°, forward 40°
+Box position: right 45°, down 70°, forward 30°
+→ upper_down (16 steps)→ lower_down (8 steps)→ claw_close → lower_up (8 steps)→ upper_up (16 steps) → base_right (9 steps) → upper_down (14 steps)→ lower_down (6 steps)→ claw_open 
 
-6.Stack Two Blocks
-User: "Pick up block A and place it on top of block B."
-→ lower_down → claw_close → lower_up → base_right (8 steps) → lower_down → claw_open</textarea>
+6.Pick up block B and place it on top of block C
+User: "Pick up block B and place it on top of block C"
+Block B = down 90°, forward 60°
+Block C target = left 45°, down 50°, forward 40°
+→ upper_down (18 steps)→ lower_down (12 steps)→ claw_close→ lower_up (12 steps)→ upper_up (18 steps)→ base_left (9 steps)→ upper_down (10 steps)→ lower_down (8 steps), claw_open → upper_up (18 steps)</textarea>
                     </div>
                 </div>
             </div>
