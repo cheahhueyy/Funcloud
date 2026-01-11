@@ -1094,158 +1094,184 @@ Do not append extra commands beyond what the user requests.</textarea>
         // Update arm angles based on JSON command
         function updateArmFromJSON(jsonString) {
             try {
-                let jsonData;
-                // Try to parse as single object or array
-                try {
-                    jsonData = JSON.parse(jsonString);
-                } catch (e) {
-                    // If not valid JSON, try to extract JSON from text
-                    const jsonMatch = jsonString.match(/\{[\s\S]*?\}/);
-                    if (jsonMatch) {
-                        jsonData = JSON.parse(jsonMatch[0]);
-                    } else {
-                        console.log('No valid JSON found in response');
-                        return;
-                    }
-                }
+                console.log("Raw response:", jsonString);
                 
-                // Handle both single object and array
-                const sequences = Array.isArray(jsonData) ? jsonData : [jsonData];
+                // 尝试提取所有JSON对象
+                const jsonMatches = jsonString.match(/\{[\s\S]*?\}/g);
+                
+                if (!jsonMatches || jsonMatches.length === 0) {
+                    console.log('No valid JSON found in response');
+                    return;
+                }
                 
                 let movements = [];
                 
-                sequences.forEach(sequenceObj => {
-                    if (sequenceObj.command === 'robot_arm' && sequenceObj.sequence) {
-                        sequenceObj.sequence.forEach(action => {
-                            const { action: actionName, steps } = action;
-                            const stepValue = parseInt(steps) || 1;
-                            const degreeChange = stepValue * stepSize;
-                            
-                            let previousAngle;
-                            
-                            switch(actionName) {
-                                case 'base_left':
-                                    previousAngle = armStatus.base;
-                                    armStatus.base = Math.max(0, armStatus.base - degreeChange);
-                                    movements.push({
-                                        servo: 'base',
-                                        action: 'base_left',
-                                        steps: stepValue,
-                                        degrees: degreeChange,
-                                        from: previousAngle,
-                                        to: armStatus.base,
-                                        time: new Date().toLocaleTimeString()
-                                    });
-                                    break;
+                // 处理每个JSON对象
+                jsonMatches.forEach(jsonMatch => {
+                    try {
+                        const jsonData = JSON.parse(jsonMatch);
+                        
+                        // 处理单个JSON对象或数组
+                        const sequences = Array.isArray(jsonData) ? jsonData : [jsonData];
+                        
+                        sequences.forEach(sequenceObj => {
+                            if (sequenceObj && sequenceObj.command === 'robot_arm' && sequenceObj.sequence) {
+                                sequenceObj.sequence.forEach(action => {
+                                    const { action: actionName, steps } = action;
+                                    const stepValue = parseInt(steps) || 1;
+                                    const degreeChange = stepValue * stepSize;
                                     
-                                case 'base_right':
-                                    previousAngle = armStatus.base;
-                                    armStatus.base = Math.min(180, armStatus.base + degreeChange);
-                                    movements.push({
-                                        servo: 'base',
-                                        action: 'base_right',
-                                        steps: stepValue,
-                                        degrees: degreeChange,
-                                        from: previousAngle,
-                                        to: armStatus.base,
-                                        time: new Date().toLocaleTimeString()
-                                    });
-                                    break;
+                                    let previousAngle;
                                     
-                                case 'lower_up':
-                                    previousAngle = armStatus.lower;
-                                    armStatus.lower = Math.max(0, armStatus.lower - degreeChange);
-                                    movements.push({
-                                        servo: 'lower',
-                                        action: 'lower_up',
-                                        steps: stepValue,
-                                        degrees: degreeChange,
-                                        from: previousAngle,
-                                        to: armStatus.lower,
-                                        time: new Date().toLocaleTimeString()
-                                    });
-                                    break;
-                                    
-                                case 'lower_down':
-                                    previousAngle = armStatus.lower;
-                                    armStatus.lower = Math.min(90, armStatus.lower + degreeChange);
-                                    movements.push({
-                                        servo: 'lower',
-                                        action: 'lower_down',
-                                        steps: stepValue,
-                                        degrees: degreeChange,
-                                        from: previousAngle,
-                                        to: armStatus.lower,
-                                        time: new Date().toLocaleTimeString()
-                                    });
-                                    break;
-                                    
-                                case 'upper_up':
-                                    previousAngle = armStatus.upper;
-                                    armStatus.upper = Math.min(180, armStatus.upper + degreeChange);
-                                    movements.push({
-                                        servo: 'upper',
-                                        action: 'upper_up',
-                                        steps: stepValue,
-                                        degrees: degreeChange,
-                                        from: previousAngle,
-                                        to: armStatus.upper,
-                                        time: new Date().toLocaleTimeString()
-                                    });
-                                    break;
-                                    
-                                case 'upper_down':
-                                    previousAngle = armStatus.upper;
-                                    armStatus.upper = Math.max(0, armStatus.upper - degreeChange);
-                                    movements.push({
-                                        servo: 'upper',
-                                        action: 'upper_down',
-                                        steps: stepValue,
-                                        degrees: degreeChange,
-                                        from: previousAngle,
-                                        to: armStatus.upper,
-                                        time: new Date().toLocaleTimeString()
-                                    });
-                                    break;
-                                    
-                                case 'claw_close':
-                                    previousAngle = armStatus.claw;
-                                    // Calculate steps to reach closed position (20°)
-                                    const closeDegrees = Math.min(degreeChange, Math.abs(armStatus.claw - clawClosed));
-                                    armStatus.claw = Math.max(clawClosed, armStatus.claw - closeDegrees);
-                                    movements.push({
-                                        servo: 'claw',
-                                        action: 'claw_close',
-                                        steps: stepValue,
-                                        degrees: closeDegrees,
-                                        from: previousAngle,
-                                        to: armStatus.claw,
-                                        time: new Date().toLocaleTimeString()
-                                    });
-                                    break;
-                                    
-                                case 'claw_open':
-                                    previousAngle = armStatus.claw;
-                                    // Calculate steps to reach open position (90°)
-                                    const openDegrees = Math.min(degreeChange, Math.abs(clawOpen - armStatus.claw));
-                                    armStatus.claw = Math.min(clawOpen, armStatus.claw + openDegrees);
-                                    movements.push({
-                                        servo: 'claw',
-                                        action: 'claw_open',
-                                        steps: stepValue,
-                                        degrees: openDegrees,
-                                        from: previousAngle,
-                                        to: armStatus.claw,
-                                        time: new Date().toLocaleTimeString()
-                                    });
-                                    break;
+                                    switch(actionName) {
+                                        case 'base_left':
+                                            previousAngle = armStatus.base;
+                                            armStatus.base = Math.max(0, armStatus.base - degreeChange);
+                                            movements.push({
+                                                servo: 'base',
+                                                action: 'base_left',
+                                                steps: stepValue,
+                                                degrees: degreeChange,
+                                                from: previousAngle,
+                                                to: armStatus.base,
+                                                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                                            });
+                                            break;
+                                            
+                                        case 'base_right':
+                                            previousAngle = armStatus.base;
+                                            armStatus.base = Math.min(180, armStatus.base + degreeChange);
+                                            movements.push({
+                                                servo: 'base',
+                                                action: 'base_right',
+                                                steps: stepValue,
+                                                degrees: degreeChange,
+                                                from: previousAngle,
+                                                to: armStatus.base,
+                                                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                                            });
+                                            break;
+                                            
+                                        case 'lower_up':
+                                            previousAngle = armStatus.lower;
+                                            armStatus.lower = Math.max(0, armStatus.lower - degreeChange);
+                                            movements.push({
+                                                servo: 'lower',
+                                                action: 'lower_up',
+                                                steps: stepValue,
+                                                degrees: degreeChange,
+                                                from: previousAngle,
+                                                to: armStatus.lower,
+                                                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                                            });
+                                            break;
+                                            
+                                        case 'lower_down':
+                                            previousAngle = armStatus.lower;
+                                            armStatus.lower = Math.min(90, armStatus.lower + degreeChange);
+                                            movements.push({
+                                                servo: 'lower',
+                                                action: 'lower_down',
+                                                steps: stepValue,
+                                                degrees: degreeChange,
+                                                from: previousAngle,
+                                                to: armStatus.lower,
+                                                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                                            });
+                                            break;
+                                            
+                                        case 'upper_up':
+                                            previousAngle = armStatus.upper;
+                                            armStatus.upper = Math.min(180, armStatus.upper + degreeChange);
+                                            movements.push({
+                                                servo: 'upper',
+                                                action: 'upper_up',
+                                                steps: stepValue,
+                                                degrees: degreeChange,
+                                                from: previousAngle,
+                                                to: armStatus.upper,
+                                                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                                            });
+                                            break;
+                                            
+                                        case 'upper_down':
+                                            previousAngle = armStatus.upper;
+                                            armStatus.upper = Math.max(0, armStatus.upper - degreeChange);
+                                            movements.push({
+                                                servo: 'upper',
+                                                action: 'upper_down',
+                                                steps: stepValue,
+                                                degrees: degreeChange,
+                                                from: previousAngle,
+                                                to: armStatus.upper,
+                                                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                                            });
+                                            break;
+                                            
+                                        case 'claw_close':
+                                            previousAngle = armStatus.claw;
+                                            // 计算实际移动的角度
+                                            const targetCloseAngle = clawClosed;
+                                            const distanceToClose = Math.abs(armStatus.claw - targetCloseAngle);
+                                            const actualCloseDegrees = Math.min(degreeChange, distanceToClose);
+                                            
+                                            if (armStatus.claw > targetCloseAngle) {
+                                                armStatus.claw -= actualCloseDegrees;
+                                            } else {
+                                                armStatus.claw = targetCloseAngle;
+                                            }
+                                            
+                                            movements.push({
+                                                servo: 'claw',
+                                                action: 'claw_close',
+                                                steps: stepValue,
+                                                degrees: actualCloseDegrees,
+                                                from: previousAngle,
+                                                to: armStatus.claw,
+                                                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                                            });
+                                            break;
+                                            
+                                        case 'claw_open':
+                                            previousAngle = armStatus.claw;
+                                            // 计算实际移动的角度
+                                            const targetOpenAngle = clawOpen;
+                                            const distanceToOpen = Math.abs(targetOpenAngle - armStatus.claw);
+                                            const actualOpenDegrees = Math.min(degreeChange, distanceToOpen);
+                                            
+                                            if (armStatus.claw < targetOpenAngle) {
+                                                armStatus.claw += actualOpenDegrees;
+                                            } else {
+                                                armStatus.claw = targetOpenAngle;
+                                            }
+                                            
+                                            movements.push({
+                                                servo: 'claw',
+                                                action: 'claw_open',
+                                                steps: stepValue,
+                                                degrees: actualOpenDegrees,
+                                                from: previousAngle,
+                                                to: armStatus.claw,
+                                                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                                            });
+                                            break;
+                                            
+                                        default:
+                                            console.log('Unknown action:', actionName);
+                                    }
+                                });
                             }
                         });
+                    } catch (parseError) {
+                        console.log('Error parsing JSON:', parseError, 'JSON:', jsonMatch);
                     }
                 });
                 
                 if (movements.length > 0) {
-                    // Add to history
+                    console.log('Movements detected:', movements);
+                    console.log('New arm status:', armStatus);
+                    
+                    // 添加到历史记录
                     movements.forEach(move => {
                         movementHistory.unshift(move);
                         if (movementHistory.length > 10) {
@@ -1253,31 +1279,52 @@ Do not append extra commands beyond what the user requests.</textarea>
                         }
                     });
                     
-                    // Save to localStorage
+                    // 保存到localStorage
                     localStorage.setItem('armStatus', JSON.stringify(armStatus));
                     localStorage.setItem('movementHistory', JSON.stringify(movementHistory));
                     
-                    // Update displays
+                    // 更新显示
                     updateArmDisplay();
                     updateHistoryDisplay();
                     
-                    // Show status message
+                    // 显示状态消息
                     const statusMsg = document.getElementById('arm-status-message');
-                    const lastMove = movements[0];
-                    statusMsg.innerHTML = `
-                        <i class="fas fa-arrow-right"></i>
-                        ${lastMove.servo} moved ${lastMove.degrees}° (${lastMove.steps} steps) 
-                        from ${lastMove.from}° to ${lastMove.to}°
-                    `;
+                    if (movements.length === 1) {
+                        const move = movements[0];
+                        statusMsg.innerHTML = `
+                            <i class="fas fa-arrow-right"></i>
+                            ${getServoName(move.servo)} moved ${move.degrees}° (${move.steps} steps) 
+                            from ${move.from}° to ${move.to}°
+                        `;
+                    } else {
+                        statusMsg.innerHTML = `
+                            <i class="fas fa-arrows-alt-h"></i>
+                            ${movements.length} movements executed. Base: ${armStatus.base}°, Lower: ${armStatus.lower}°, Upper: ${armStatus.upper}°, Claw: ${armStatus.claw}°
+                        `;
+                    }
                     statusMsg.className = 'status-update';
                     
                     setTimeout(() => {
                         statusMsg.innerHTML = '<i class="fas fa-info-circle"></i> Arm status updated';
                     }, 3000);
+                } else {
+                    console.log('No valid movements found in response');
                 }
                 
             } catch (error) {
                 console.error('Error updating arm status:', error);
+                console.error('Response was:', jsonString);
+            }
+        }
+
+        // 获取servo的显示名称
+        function getServoName(servo) {
+            switch(servo) {
+                case 'base': return 'Base';
+                case 'lower': return 'Lower arm';
+                case 'upper': return 'Upper arm';
+                case 'claw': return 'Claw';
+                default: return servo;
             }
         }
 
@@ -1338,12 +1385,15 @@ Do not append extra commands beyond what the user requests.</textarea>
         // Reset arm to initial positions
         function resetArmToInitial() {
             armStatus = { ...initialPositions };
+            movementHistory = [];
             
             // Save to localStorage
             localStorage.setItem('armStatus', JSON.stringify(armStatus));
+            localStorage.setItem('movementHistory', JSON.stringify(movementHistory));
             
             // Update displays
             updateArmDisplay();
+            updateHistoryDisplay();
             
             // Show status message
             const statusMsg = document.getElementById('arm-status-message');
@@ -1544,12 +1594,13 @@ Do not append extra commands beyond what the user requests.</textarea>
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
                 const data = await response.text();
+                console.log("Server response:", data);
                 responseDiv.textContent = data;
                 
-                // Update arm status based on the returned JSON
+                // 更新机械臂状态
                 updateArmFromJSON(data);
                 
-                // Add to chat history
+                // 添加到聊天历史
                 addToChatHistory(userPrompt, data);
                 
                 statusDiv.className = 'system-status';
@@ -1631,10 +1682,26 @@ Do not append extra commands beyond what the user requests.</textarea>
             // Initialize arm status
             initArmStatus();
             
-            // Add reset button functionality
-            document.getElementById('reset-button').addEventListener('click', () => {
-                resetArmToInitial();
+            // Modify reset button to also reset arm
+            const resetButton = document.getElementById('reset-button');
+            resetButton.addEventListener('click', () => {
+                chatHistory = [];
+                updateChatDisplay();
+                document.getElementById('response').textContent = 'Waiting for command...';
+                document.getElementById('status').className = 'system-status';
+                document.getElementById('status').innerHTML = '<i class="fas fa-info-circle"></i> Ready for commands';
+                
+                if (isRecording) stopRecording();
+                showVoiceStatus('Click microphone for voice input', 'ready');
             });
+            
+            // Add separate arm reset button
+            const armResetBtn = document.createElement('button');
+            armResetBtn.className = 'btn btn-secondary';
+            armResetBtn.innerHTML = '<i class="fas fa-undo"></i> Reset Arm';
+            armResetBtn.addEventListener('click', resetArmToInitial);
+            
+            document.querySelector('.action-buttons').appendChild(armResetBtn);
         });
 
         // Send button
@@ -1667,18 +1734,6 @@ Do not append extra commands beyond what the user requests.</textarea>
                 document.getElementById('chat-input').value = chip.textContent;
                 document.getElementById('chat-input').focus();
             });
-        });
-
-        // Clear chat
-        document.getElementById('reset-button').addEventListener('click', () => {
-            chatHistory = [];
-            updateChatDisplay();
-            document.getElementById('response').textContent = 'Waiting for command...';
-            document.getElementById('status').className = 'system-status';
-            document.getElementById('status').innerHTML = '<i class="fas fa-info-circle"></i> Ready for commands';
-            
-            if (isRecording) stopRecording();
-            showVoiceStatus('Click microphone for voice input', 'ready');
         });
 
         // Toggle system prompt
