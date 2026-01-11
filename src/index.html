@@ -144,190 +144,6 @@
             gap: 8px;
         }
 
-        /* Arm Status Panel */
-        .arm-status-container {
-            margin-top: 20px;
-        }
-
-        .arm-status-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .servo-card {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 16px;
-        }
-
-        .servo-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .servo-name {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .servo-value {
-            font-weight: 700;
-            font-size: 18px;
-            color: var(--accent-color);
-        }
-
-        .servo-progress {
-            height: 6px;
-            background: var(--border-color);
-            border-radius: 3px;
-            margin-bottom: 8px;
-            overflow: hidden;
-        }
-
-        .servo-progress-bar {
-            height: 100%;
-            background: var(--accent-color);
-            border-radius: 3px;
-            transition: width 0.3s ease;
-        }
-
-        .servo-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        .servo-range {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 4px;
-        }
-
-        .angle-display {
-            font-size: 32px;
-            font-weight: 700;
-            text-align: center;
-            color: var(--accent-color);
-            margin: 20px 0;
-            padding: 20px;
-            background: var(--bg-tertiary);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .servo-controls {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .angle-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: none;
-            background: var(--accent-color);
-            color: white;
-            cursor: pointer;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .angle-btn:hover {
-            background: var(--accent-hover);
-            transform: scale(1.1);
-        }
-
-        .angle-btn:active {
-            transform: scale(0.95);
-        }
-
-        .reset-btn {
-            background: var(--border-color);
-            color: var(--text-primary);
-        }
-
-        .reset-btn:hover {
-            background: var(--hover-bg);
-        }
-
-        .angle-input {
-            width: 100px;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            background: var(--input-bg);
-            color: var(--text-primary);
-            text-align: center;
-        }
-
-        .angle-input:focus {
-            outline: none;
-            border-color: var(--accent-color);
-        }
-
-        .status-update {
-            padding: 12px;
-            background: rgba(16, 185, 129, 0.15);
-            border-radius: 8px;
-            font-size: 14px;
-            margin-top: 12px;
-            color: var(--success-color);
-            border-left: 4px solid var(--success-color);
-        }
-
-        .status-update.error {
-            background: rgba(239, 68, 68, 0.15);
-            color: var(--error-color);
-            border-left-color: var(--error-color);
-        }
-
-        .history-container {
-            background: var(--bg-tertiary);
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 20px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .history-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--text-secondary);
-        }
-
-        .history-item {
-            padding: 8px 12px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 13px;
-        }
-
-        .history-item:last-child {
-            border-bottom: none;
-        }
-
-        .history-time {
-            color: var(--text-muted);
-            font-size: 12px;
-            margin-right: 12px;
-        }
-
-        .history-action {
-            color: var(--text-primary);
-        }
-
         /* Form Elements */
         .input-group {
             margin-bottom: 16px;
@@ -419,10 +235,6 @@
 
         @media (max-width: 768px) {
             .interface-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .arm-status-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -821,7 +633,7 @@ Directional keywords:
 
 Vague commands: Assume 1 step (5°)
 
-Compound actions: e.g., "grab object" = lower_arm + claw_close
+Compound actions: e.g., “grab object” = lower_arm + claw_close
 
 Multiple commands in one sentence: Process in natural language order
 
@@ -842,11 +654,11 @@ If no historical data exists, output: "cannot do".
 🟢 Easy Tasks
 
 1. Rotate base to 180°, then return back to 90°
-User: "Rotate base to 180 degrees, then return to 90 degrees."
+User: “Rotate base to 180 degrees, then return to 90 degrees.”
 → base_right (18 steps), then base_left (18 steps)
 
 2.Cose and Open the Claw
-User: "Close the claw fully, then open it again."
+User: “Close the claw fully, then open it again.”
 → claw_close →  claw_open
 
 🟡 Medium Tasks
@@ -901,9 +713,9 @@ Do not append extra commands beyond what the user requests.</textarea>
                     
                     <div class="example-chips">
                         <div class="chip">Move base left 30°</div>
+                        <div class="chip">Close claw</div>
                         <div class="chip">Open claw</div>
-                        <div class="chip">Return to start</div>
-                        <div class="chip">Grab and move</div>
+                        <div class="chip">Return to initial</div>
                         <div class="chip voice-chip" id="voice-example">
                             <i class="fas fa-microphone"></i> Voice
                         </div>
@@ -950,99 +762,6 @@ Do not append extra commands beyond what the user requests.</textarea>
                 </div>
             </div>
         </div>
-
-        <!-- Arm Status Panel -->
-        <div class="panel arm-status-container">
-            <h2 class="panel-title"><i class="fas fa-robot"></i> Arm Status & Positions</h2>
-            
-            <div class="arm-status-grid">
-                <!-- Servo 1: Base Rotation -->
-                <div class="servo-card" data-servo="base">
-                    <div class="servo-header">
-                        <div class="servo-name">Base Rotation (Servo 1)</div>
-                        <div class="servo-value" id="base-angle">90°</div>
-                    </div>
-                    <div class="servo-progress">
-                        <div class="servo-progress-bar" id="base-progress" style="width: 50%"></div>
-                    </div>
-                    <div class="servo-info">
-                        <div>Current: <span id="base-current">90°</span></div>
-                        <div>Range: 0° - 180°</div>
-                    </div>
-                    <div class="servo-range">
-                        <span>0° (Left)</span>
-                        <span>180° (Right)</span>
-                    </div>
-                </div>
-                
-                <!-- Servo 2: Lower Arm -->
-                <div class="servo-card" data-servo="lower">
-                    <div class="servo-header">
-                        <div class="servo-name">Lower Arm (Servo 2)</div>
-                        <div class="servo-value" id="lower-angle">0°</div>
-                    </div>
-                    <div class="servo-progress">
-                        <div class="servo-progress-bar" id="lower-progress" style="width: 0%"></div>
-                    </div>
-                    <div class="servo-info">
-                        <div>Current: <span id="lower-current">0°</span></div>
-                        <div>Range: 0° - 90°</div>
-                    </div>
-                    <div class="servo-range">
-                        <span>0° (Backward/Up)</span>
-                        <span>90° (Forward/Down)</span>
-                    </div>
-                </div>
-                
-                <!-- Servo 3: Upper Arm -->
-                <div class="servo-card" data-servo="upper">
-                    <div class="servo-header">
-                        <div class="servo-name">Upper Arm (Servo 3)</div>
-                        <div class="servo-value" id="upper-angle">90°</div>
-                    </div>
-                    <div class="servo-progress">
-                        <div class="servo-progress-bar" id="upper-progress" style="width: 50%"></div>
-                    </div>
-                    <div class="servo-info">
-                        <div>Current: <span id="upper-current">90°</span></div>
-                        <div>Range: 0° - 180°</div>
-                    </div>
-                    <div class="servo-range">
-                        <span>0° (Down)</span>
-                        <span>180° (Up)</span>
-                    </div>
-                </div>
-                
-                <!-- Servo 4: Claw -->
-                <div class="servo-card" data-servo="claw">
-                    <div class="servo-header">
-                        <div class="servo-name">Claw (Servo 4)</div>
-                        <div class="servo-value" id="claw-angle">90°</div>
-                    </div>
-                    <div class="servo-progress">
-                        <div class="servo-progress-bar" id="claw-progress" style="width: 100%"></div>
-                    </div>
-                    <div class="servo-info">
-                        <div>Current: <span id="claw-current">90°</span></div>
-                        <div>Range: 20° - 90°</div>
-                    </div>
-                    <div class="servo-range">
-                        <span>20° (Closed)</span>
-                        <span>90° (Open)</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="status-update" id="arm-status-message">
-                <i class="fas fa-info-circle"></i>
-                All servos are at their initial positions
-            </div>
-            
-            <div class="history-container">
-                <div class="history-title">Movement History</div>
-                <div id="movement-history"></div>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -1054,356 +773,6 @@ Do not append extra commands beyond what the user requests.</textarea>
         let isRecording = false;
         let finalTranscript = '';
         let silenceTimer = null;
-
-        // Arm status variables
-        let armStatus = {
-            base: 90,    // Servo 1: Base rotation (0-180)
-            lower: 0,    // Servo 2: Lower arm (0-90)
-            upper: 90,   // Servo 3: Upper arm (0-180)
-            claw: 90     // Servo 4: Claw (20-90)
-        };
-
-        const stepSize = 5; // 1 step = 5 degrees
-        const initialPositions = { base: 90, lower: 0, upper: 90, claw: 90 };
-        const clawClosed = 20;
-        const clawOpen = 90;
-
-        // Movement history
-        let movementHistory = [];
-
-        // Initialize arm status display
-        function initArmStatus() {
-            updateArmDisplay();
-            
-            // Load from localStorage if available
-            const savedStatus = localStorage.getItem('armStatus');
-            if (savedStatus) {
-                const parsed = JSON.parse(savedStatus);
-                armStatus = { ...armStatus, ...parsed };
-                updateArmDisplay();
-            }
-            
-            // Load history from localStorage
-            const savedHistory = localStorage.getItem('movementHistory');
-            if (savedHistory) {
-                movementHistory = JSON.parse(savedHistory);
-                updateHistoryDisplay();
-            }
-        }
-
-        // Update arm angles based on JSON command
-        function updateArmFromJSON(jsonString) {
-            try {
-                console.log("Raw response:", jsonString);
-                
-                // 尝试提取所有JSON对象
-                const jsonMatches = jsonString.match(/\{[\s\S]*?\}/g);
-                
-                if (!jsonMatches || jsonMatches.length === 0) {
-                    console.log('No valid JSON found in response');
-                    return;
-                }
-                
-                let movements = [];
-                
-                // 处理每个JSON对象
-                jsonMatches.forEach(jsonMatch => {
-                    try {
-                        const jsonData = JSON.parse(jsonMatch);
-                        
-                        // 处理单个JSON对象或数组
-                        const sequences = Array.isArray(jsonData) ? jsonData : [jsonData];
-                        
-                        sequences.forEach(sequenceObj => {
-                            if (sequenceObj && sequenceObj.command === 'robot_arm' && sequenceObj.sequence) {
-                                sequenceObj.sequence.forEach(action => {
-                                    const { action: actionName, steps } = action;
-                                    const stepValue = parseInt(steps) || 1;
-                                    const degreeChange = stepValue * stepSize;
-                                    
-                                    let previousAngle;
-                                    
-                                    switch(actionName) {
-                                        case 'base_left':
-                                            previousAngle = armStatus.base;
-                                            armStatus.base = Math.max(0, armStatus.base - degreeChange);
-                                            movements.push({
-                                                servo: 'base',
-                                                action: 'base_left',
-                                                steps: stepValue,
-                                                degrees: degreeChange,
-                                                from: previousAngle,
-                                                to: armStatus.base,
-                                                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-                                            });
-                                            break;
-                                            
-                                        case 'base_right':
-                                            previousAngle = armStatus.base;
-                                            armStatus.base = Math.min(180, armStatus.base + degreeChange);
-                                            movements.push({
-                                                servo: 'base',
-                                                action: 'base_right',
-                                                steps: stepValue,
-                                                degrees: degreeChange,
-                                                from: previousAngle,
-                                                to: armStatus.base,
-                                                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-                                            });
-                                            break;
-                                            
-                                        case 'lower_up':
-                                            previousAngle = armStatus.lower;
-                                            armStatus.lower = Math.max(0, armStatus.lower - degreeChange);
-                                            movements.push({
-                                                servo: 'lower',
-                                                action: 'lower_up',
-                                                steps: stepValue,
-                                                degrees: degreeChange,
-                                                from: previousAngle,
-                                                to: armStatus.lower,
-                                                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-                                            });
-                                            break;
-                                            
-                                        case 'lower_down':
-                                            previousAngle = armStatus.lower;
-                                            armStatus.lower = Math.min(90, armStatus.lower + degreeChange);
-                                            movements.push({
-                                                servo: 'lower',
-                                                action: 'lower_down',
-                                                steps: stepValue,
-                                                degrees: degreeChange,
-                                                from: previousAngle,
-                                                to: armStatus.lower,
-                                                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-                                            });
-                                            break;
-                                            
-                                        case 'upper_up':
-                                            previousAngle = armStatus.upper;
-                                            armStatus.upper = Math.min(180, armStatus.upper + degreeChange);
-                                            movements.push({
-                                                servo: 'upper',
-                                                action: 'upper_up',
-                                                steps: stepValue,
-                                                degrees: degreeChange,
-                                                from: previousAngle,
-                                                to: armStatus.upper,
-                                                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-                                            });
-                                            break;
-                                            
-                                        case 'upper_down':
-                                            previousAngle = armStatus.upper;
-                                            armStatus.upper = Math.max(0, armStatus.upper - degreeChange);
-                                            movements.push({
-                                                servo: 'upper',
-                                                action: 'upper_down',
-                                                steps: stepValue,
-                                                degrees: degreeChange,
-                                                from: previousAngle,
-                                                to: armStatus.upper,
-                                                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-                                            });
-                                            break;
-                                            
-                                        case 'claw_close':
-                                            previousAngle = armStatus.claw;
-                                            // 计算实际移动的角度
-                                            const targetCloseAngle = clawClosed;
-                                            const distanceToClose = Math.abs(armStatus.claw - targetCloseAngle);
-                                            const actualCloseDegrees = Math.min(degreeChange, distanceToClose);
-                                            
-                                            if (armStatus.claw > targetCloseAngle) {
-                                                armStatus.claw -= actualCloseDegrees;
-                                            } else {
-                                                armStatus.claw = targetCloseAngle;
-                                            }
-                                            
-                                            movements.push({
-                                                servo: 'claw',
-                                                action: 'claw_close',
-                                                steps: stepValue,
-                                                degrees: actualCloseDegrees,
-                                                from: previousAngle,
-                                                to: armStatus.claw,
-                                                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-                                            });
-                                            break;
-                                            
-                                        case 'claw_open':
-                                            previousAngle = armStatus.claw;
-                                            // 计算实际移动的角度
-                                            const targetOpenAngle = clawOpen;
-                                            const distanceToOpen = Math.abs(targetOpenAngle - armStatus.claw);
-                                            const actualOpenDegrees = Math.min(degreeChange, distanceToOpen);
-                                            
-                                            if (armStatus.claw < targetOpenAngle) {
-                                                armStatus.claw += actualOpenDegrees;
-                                            } else {
-                                                armStatus.claw = targetOpenAngle;
-                                            }
-                                            
-                                            movements.push({
-                                                servo: 'claw',
-                                                action: 'claw_open',
-                                                steps: stepValue,
-                                                degrees: actualOpenDegrees,
-                                                from: previousAngle,
-                                                to: armStatus.claw,
-                                                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-                                            });
-                                            break;
-                                            
-                                        default:
-                                            console.log('Unknown action:', actionName);
-                                    }
-                                });
-                            }
-                        });
-                    } catch (parseError) {
-                        console.log('Error parsing JSON:', parseError, 'JSON:', jsonMatch);
-                    }
-                });
-                
-                if (movements.length > 0) {
-                    console.log('Movements detected:', movements);
-                    console.log('New arm status:', armStatus);
-                    
-                    // 添加到历史记录
-                    movements.forEach(move => {
-                        movementHistory.unshift(move);
-                        if (movementHistory.length > 10) {
-                            movementHistory.pop();
-                        }
-                    });
-                    
-                    // 保存到localStorage
-                    localStorage.setItem('armStatus', JSON.stringify(armStatus));
-                    localStorage.setItem('movementHistory', JSON.stringify(movementHistory));
-                    
-                    // 更新显示
-                    updateArmDisplay();
-                    updateHistoryDisplay();
-                    
-                    // 显示状态消息
-                    const statusMsg = document.getElementById('arm-status-message');
-                    if (movements.length === 1) {
-                        const move = movements[0];
-                        statusMsg.innerHTML = `
-                            <i class="fas fa-arrow-right"></i>
-                            ${getServoName(move.servo)} moved ${move.degrees}° (${move.steps} steps) 
-                            from ${move.from}° to ${move.to}°
-                        `;
-                    } else {
-                        statusMsg.innerHTML = `
-                            <i class="fas fa-arrows-alt-h"></i>
-                            ${movements.length} movements executed. Base: ${armStatus.base}°, Lower: ${armStatus.lower}°, Upper: ${armStatus.upper}°, Claw: ${armStatus.claw}°
-                        `;
-                    }
-                    statusMsg.className = 'status-update';
-                    
-                    setTimeout(() => {
-                        statusMsg.innerHTML = '<i class="fas fa-info-circle"></i> Arm status updated';
-                    }, 3000);
-                } else {
-                    console.log('No valid movements found in response');
-                }
-                
-            } catch (error) {
-                console.error('Error updating arm status:', error);
-                console.error('Response was:', jsonString);
-            }
-        }
-
-        // 获取servo的显示名称
-        function getServoName(servo) {
-            switch(servo) {
-                case 'base': return 'Base';
-                case 'lower': return 'Lower arm';
-                case 'upper': return 'Upper arm';
-                case 'claw': return 'Claw';
-                default: return servo;
-            }
-        }
-
-        // Update the arm display
-        function updateArmDisplay() {
-            // Update angle displays
-            document.getElementById('base-angle').textContent = `${armStatus.base}°`;
-            document.getElementById('lower-angle').textContent = `${armStatus.lower}°`;
-            document.getElementById('upper-angle').textContent = `${armStatus.upper}°`;
-            document.getElementById('claw-angle').textContent = `${armStatus.claw}°`;
-            
-            document.getElementById('base-current').textContent = `${armStatus.base}°`;
-            document.getElementById('lower-current').textContent = `${armStatus.lower}°`;
-            document.getElementById('upper-current').textContent = `${armStatus.upper}°`;
-            document.getElementById('claw-current').textContent = `${armStatus.claw}°`;
-            
-            // Update progress bars
-            document.getElementById('base-progress').style.width = `${(armStatus.base / 180) * 100}%`;
-            document.getElementById('lower-progress').style.width = `${(armStatus.lower / 90) * 100}%`;
-            document.getElementById('upper-progress').style.width = `${(armStatus.upper / 180) * 100}%`;
-            document.getElementById('claw-progress').style.width = `${((armStatus.claw - 20) / 70) * 100}%`;
-        }
-
-        // Update movement history display
-        function updateHistoryDisplay() {
-            const historyDiv = document.getElementById('movement-history');
-            historyDiv.innerHTML = '';
-            
-            if (movementHistory.length === 0) {
-                historyDiv.innerHTML = '<div class="history-item">No movements recorded yet</div>';
-                return;
-            }
-            
-            movementHistory.forEach(move => {
-                const item = document.createElement('div');
-                item.className = 'history-item';
-                
-                let actionText = '';
-                switch(move.action) {
-                    case 'base_left': actionText = `Base left ${move.steps} steps`; break;
-                    case 'base_right': actionText = `Base right ${move.steps} steps`; break;
-                    case 'lower_up': actionText = `Lower arm up ${move.steps} steps`; break;
-                    case 'lower_down': actionText = `Lower arm down ${move.steps} steps`; break;
-                    case 'upper_up': actionText = `Upper arm up ${move.steps} steps`; break;
-                    case 'upper_down': actionText = `Upper arm down ${move.steps} steps`; break;
-                    case 'claw_close': actionText = `Claw close ${move.steps} steps`; break;
-                    case 'claw_open': actionText = `Claw open ${move.steps} steps`; break;
-                }
-                
-                item.innerHTML = `
-                    <span class="history-time">${move.time}</span>
-                    <span class="history-action">${actionText} (${move.from}° → ${move.to}°)</span>
-                `;
-                historyDiv.appendChild(item);
-            });
-        }
-
-        // Reset arm to initial positions
-        function resetArmToInitial() {
-            armStatus = { ...initialPositions };
-            movementHistory = [];
-            
-            // Save to localStorage
-            localStorage.setItem('armStatus', JSON.stringify(armStatus));
-            localStorage.setItem('movementHistory', JSON.stringify(movementHistory));
-            
-            // Update displays
-            updateArmDisplay();
-            updateHistoryDisplay();
-            
-            // Show status message
-            const statusMsg = document.getElementById('arm-status-message');
-            statusMsg.innerHTML = '<i class="fas fa-undo"></i> Arm reset to initial positions';
-            statusMsg.className = 'status-update';
-            
-            setTimeout(() => {
-                statusMsg.innerHTML = '<i class="fas fa-info-circle"></i> All servos at initial positions';
-            }, 3000);
-        }
 
         // Initialize speech recognition
         function initSpeechRecognition() {
@@ -1594,13 +963,7 @@ Do not append extra commands beyond what the user requests.</textarea>
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
                 const data = await response.text();
-                console.log("Server response:", data);
                 responseDiv.textContent = data;
-                
-                // 更新机械臂状态
-                updateArmFromJSON(data);
-                
-                // 添加到聊天历史
                 addToChatHistory(userPrompt, data);
                 
                 statusDiv.className = 'system-status';
@@ -1678,30 +1041,6 @@ Do not append extra commands beyond what the user requests.</textarea>
             }
             
             showVoiceStatus('Click microphone for voice input', 'ready');
-            
-            // Initialize arm status
-            initArmStatus();
-            
-            // Modify reset button to also reset arm
-            const resetButton = document.getElementById('reset-button');
-            resetButton.addEventListener('click', () => {
-                chatHistory = [];
-                updateChatDisplay();
-                document.getElementById('response').textContent = 'Waiting for command...';
-                document.getElementById('status').className = 'system-status';
-                document.getElementById('status').innerHTML = '<i class="fas fa-info-circle"></i> Ready for commands';
-                
-                if (isRecording) stopRecording();
-                showVoiceStatus('Click microphone for voice input', 'ready');
-            });
-            
-            // Add separate arm reset button
-            const armResetBtn = document.createElement('button');
-            armResetBtn.className = 'btn btn-secondary';
-            armResetBtn.innerHTML = '<i class="fas fa-undo"></i> Reset Arm';
-            armResetBtn.addEventListener('click', resetArmToInitial);
-            
-            document.querySelector('.action-buttons').appendChild(armResetBtn);
         });
 
         // Send button
@@ -1736,6 +1075,1126 @@ Do not append extra commands beyond what the user requests.</textarea>
             });
         });
 
+        // Clear chat
+        document.getElementById('reset-button').addEventListener('click', () => {
+            chatHistory = [];
+            updateChatDisplay();
+            document.getElementById('response').textContent = 'Waiting for command...';
+            document.getElementById('status').className = 'system-status';
+            document.getElementById('status').innerHTML = '<i class="fas fa-info-circle"></i> Ready for commands';
+            
+            if (isRecording) stopRecording();
+            showVoiceStatus('Click microphone for voice input', 'ready');
+        });
+
+        // Toggle system prompt
+        document.getElementById('toggle-system-prompt').addEventListener('click', () => {
+            const container = document.getElementById('system-prompt-container');
+            const button = document.getElementById('toggle-system-prompt');
+            
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                button.textContent = 'Hide';
+            } else {
+                container.style.display = 'none';
+                button.textContent = 'Show';
+            }
+        });
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        
+        // Check for saved theme preference or default to dark mode
+        const currentTheme = localStorage.getItem('theme') || 'dark';<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Arm Controller</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Theme variables */
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #0f172a;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --accent-color: #4f46e5;
+            --accent-hover: #4338ca;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --panel-bg: #1e293b;
+            --input-bg: #0f172a;
+            --hover-bg: #475569;
+        }
+
+        body.light-mode {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --accent-color: #4f46e5;
+            --accent-hover: #4338ca;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --panel-bg: #ffffff;
+            --input-bg: #f8fafc;
+            --hover-bg: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success-color);
+        }
+
+        .theme-toggle {
+            background: var(--panel-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .theme-toggle:hover {
+            background: var(--hover-bg);
+            transform: rotate(20deg);
+        }
+
+        .theme-toggle i {
+            font-size: 16px;
+        }
+
+        /* Panels */
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Form Elements */
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--hover-bg);
+        }
+
+        .toggle-btn {
+            background: var(--border-color);
+            color: var(--text-primary);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn:hover {
+            background: var(--hover-bg);
+        }
+
+        /* Grid Layout */
+        .interface-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .interface-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Chat Interface */
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-history {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            overflow-y: auto;
+            min-height: 300px;
+            max-height: 400px;
+            transition: all 0.3s ease;
+        }
+
+        .empty-chat {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 40px 20px;
+        }
+
+        .empty-chat i {
+            font-size: 32px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .chat-message {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-message {
+            align-items: flex-end;
+        }
+
+        .response-message {
+            align-items: flex-start;
+        }
+
+        .message-bubble {
+            padding: 10px 14px;
+            border-radius: 12px;
+            max-width: 85%;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+
+        .user-message .message-bubble {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .response-message .message-bubble {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Example Chips */
+        .example-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .chip {
+            background: var(--border-color);
+            border-radius: 16px;
+            padding: 6px 12px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chip:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
+
+        .voice-chip {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .voice-chip:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Voice Controls */
+        .voice-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .voice-language {
+            flex: 1;
+        }
+
+        .voice-btn {
+            background: var(--border-color);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 6px;
+            padding: 10px;
+            width: 48px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .voice-btn:hover {
+            background: var(--hover-bg);
+        }
+
+        .voice-btn.recording {
+            background: var(--error-color);
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .voice-status {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 8px;
+            display: none;
+        }
+
+        .voice-status.recording {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            display: block;
+        }
+
+        body.light-mode .voice-status.recording {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .voice-status.ready {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            display: block;
+        }
+
+        body.light-mode .voice-status.ready {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .voice-status.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            display: block;
+        }
+
+        body.light-mode .voice-status.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        /* Input Area */
+        .input-area {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .chat-input {
+            flex: 1;
+        }
+
+        .send-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            width: 48px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .send-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        /* Response Area */
+        .response-output {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            min-height: 300px;
+            max-height: 400px;
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        /* System Status */
+        .system-status {
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+        }
+
+        body.light-mode .system-status {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .system-status.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+        }
+
+        body.light-mode .system-status.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .system-status.processing {
+            background: rgba(79, 70, 229, 0.15);
+            color: #a5b4fc;
+        }
+
+        body.light-mode .system-status.processing {
+            background: rgba(79, 70, 229, 0.1);
+            color: #4f46e5;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            border-top-color: var(--accent-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Config Section Specific */
+        #system-prompt-container {
+            margin-top: 8px;
+        }
+
+        .input-group > div:first-child {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .input-group > div:first-child label {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Robot Arm Controller</h1>
+            <p class="subtitle">Control your robotic arm with voice or text commands</p>
+            <div class="status-bar">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>System Online</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>AI Connected</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>Arm Ready</span>
+                </div>
+                <button id="theme-toggle" class="theme-toggle" title="Toggle theme">
+                    <i class="fas fa-sun"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="panel">
+            <h2 class="panel-title"><i class="fas fa-sliders-h"></i> Configuration</h2>
+            
+            <div class="input-group">
+                <label for="function-url">Azure Function URL</label>
+                <input type="text" id="function-url" value="https://raspizero-1.azurewebsites.net/api/http_trigger_pi">
+            </div>
+            
+            <div class="input-group">
+                <div>
+                    <label for="system-prompt">System Instructions</label>
+                    <button id="toggle-system-prompt" class="toggle-btn">Show</button>
+                </div>
+                <div id="system-prompt-container" style="display: none;">
+                    <textarea id="system-prompt">You are a command interpreter for a cloud-connected Raspberry Pi device that controls a 4-DOF robotic arm through an Arduino.
+
+Your job is to convert natural language commands into a structured JSON format that the device can understand.
+
+You MUST follow these rules exactly:
+
+1️⃣ Servo and Command Mapping
+Servo	Function	Arduino Command	JSON "action"
+Servo1	Base rotation	%B# → left, %C# → right	"base_left", "base_right"
+Servo2	Lower arm	%D# → backward (up), %A# → forward (down)	"lower_up", "lower_down"
+Servo3	Upper arm	%4# → up, %7# → down	"upper_up", "upper_down"
+Servo4	Claw	%5# → close, %6# → open	"claw_close", "claw_open"
+
+Initial positions:
+
+pos1 = 90, pos2 = 0, pos3 = 90, pos4 = 90
+
+Step size: 1 step = 5°
+
+Claw positions:
+
+Claw closed = 20°
+
+Claw open = 90°
+
+2️⃣ JSON Format
+
+Each movement or action is represented as:
+
+{
+    "command": "robot_arm",
+    "sequence": [
+        {"action": "<action_name>", "steps": <number_of_5_degree_steps>}
+    ]
+}
+
+
+Multiple sequential actions must return a list of JSON objects in the exact order.
+
+Degrees → steps: steps = |target_angle − current_angle| ÷ 5
+
+3️⃣ Movement Rules
+
+Directional keywords:
+
+"backward" → lower_up
+
+"forward" → lower_down
+
+"up" → upper_up
+
+"down" → upper_down
+
+Vague commands: Assume 1 step (5°)
+
+Compound actions: e.g., “grab object” = lower_arm + claw_close
+
+Multiple commands in one sentence: Process in natural language order
+
+Claw movements: Always calculate steps = |current − target| ÷ 5
+
+4️⃣ Return to Initial Position
+
+Maintain a historical record of current servo positions.
+
+When the user asks to return to initial position, calculate minimal steps from current positions to initial positions (pos1=90, pos2=0, pos3=90, pos4=90).
+
+Only include servos that need movement.
+
+If no historical data exists, output: "cannot do".
+
+5️⃣ Preset Tasks (Easy → Hard)
+
+🟢 Easy Tasks
+
+1. Rotate base to 180°, then return back to 90°
+User: “Rotate base to 180 degrees, then return to 90 degrees.”
+→ base_right (18 steps), then base_left (18 steps)
+
+2.Cose and Open the Claw
+User: “Close the claw fully, then open it again.”
+→ claw_close →  claw_open
+
+🟡 Medium Tasks
+
+3. Lower arm down, close claw to grab paper, lift up and release it.
+Paper location:  forward 30°
+→ lower_down (6 steps)→ claw_close→ lower_up (6 steps)→ claw_open 
+
+4.Move Object Sideways
+User: "Pick object and move it to the right side, then release it."
+→ claw_close → base_right (8 steps) → claw_open
+
+🔴 Hard Tasks
+
+5.Pick block A and place it to the box (right side)
+User: "Pick block A and place it to the box."
+Block A position: down 80°, forward 40°
+Box position: right 45°, down 70°, forward 30°
+→ upper_down (16 steps)→ lower_down (9 steps)→ claw_close → lower_up (8 steps) → base_right (9 steps) → lower_down (6 steps)→ claw_open 
+
+6.Pick up block B and place it on top of block C
+User: "Pick up block B and place it on top of block C"
+Block B = down 90°, forward 60°
+Block C target = left 45°, down 50°, forward 40°
+→ upper_down (18 steps)→ lower_down (12 steps)→ claw_close→ lower_up (6 steps)→ base_left (9 steps)→ upper_up (8 steps)→ lower_down (3 steps), claw_open 
+
+6️⃣ Important Notes
+
+Always output valid JSON only, no text, explanations, or markdown.
+
+Always calculate steps from current servo positions, never assume starting from initial positions unless explicitly requested.
+
+Always use minimal movement paths.
+
+Do not append extra commands beyond what the user requests.</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="interface-grid">
+            <!-- Command Interface -->
+            <div class="panel">
+                <h2 class="panel-title"><i class="fas fa-comments"></i> Command Interface</h2>
+                
+                <div class="chat-area">
+                    <div id="chat-history" class="chat-history">
+                        <div class="empty-chat">
+                            <i class="fas fa-robot"></i>
+                            <p>Send a command to control the robot arm</p>
+                        </div>
+                    </div>
+                    
+                    <div class="example-chips">
+                        <div class="chip">Move base left 30°</div>
+                        <div class="chip">Close claw</div>
+                        <div class="chip">Open claw</div>
+                        <div class="chip">Return to initial</div>
+                        <div class="chip voice-chip" id="voice-example">
+                            <i class="fas fa-microphone"></i> Voice
+                        </div>
+                    </div>
+                    
+                    <div class="voice-controls">
+                        <select id="voice-language" class="voice-language">
+                            <option value="en-US">English</option>
+                            <option value="zh-CN">Chinese</option>
+                            <option value="ms-MY">Malay</option>
+                        </select>
+                        <button id="voice-toggle-button" class="voice-btn">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="voice-status" class="voice-status"></div>
+                    
+                    <div class="input-area">
+                        <input type="text" id="chat-input" class="chat-input" placeholder="Type your command...">
+                        <button id="chat-send-button" class="send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button id="reset-button" class="btn btn-secondary">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Device Response -->
+            <div class="panel">
+                <h2 class="panel-title"><i class="fas fa-terminal"></i> Device Response</h2>
+                
+                <div class="response-area">
+                    <div id="response" class="response-output">Waiting for command...</div>
+                    <div id="status" class="system-status">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Ready for commands</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chat history
+        let chatHistory = [];
+
+        // Speech recognition variables
+        let speechRecognition = null;
+        let isRecording = false;
+        let finalTranscript = '';
+        let silenceTimer = null;
+
+        // Initialize speech recognition
+        function initSpeechRecognition() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showVoiceStatus('Speech recognition not supported', 'error');
+                return false;
+            }
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            speechRecognition = new SpeechRecognition();
+            speechRecognition.continuous = true;
+            speechRecognition.interimResults = true;
+            speechRecognition.lang = document.getElementById('voice-language').value;
+            
+            speechRecognition.onresult = handleSpeechResult;
+            speechRecognition.onerror = handleSpeechError;
+            speechRecognition.onend = handleSpeechEnd;
+            
+            return true;
+        }
+
+        // Handle speech recognition result
+        function handleSpeechResult(event) {
+            clearTimeout(silenceTimer);
+            silenceTimer = setTimeout(() => {
+                if (isRecording) {
+                    showVoiceStatus('No speech detected, stopping', 'error');
+                    stopRecording();
+                }
+            }, 10000);
+
+            let interimTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript + ' ';
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+
+            const chatInput = document.getElementById('chat-input');
+            chatInput.value = finalTranscript + interimTranscript;
+            
+            if (interimTranscript) {
+                showVoiceStatus('Listening: ' + interimTranscript, 'recording');
+            }
+        }
+
+        // Handle speech recognition error
+        function handleSpeechError(event) {
+            let errorMsg = 'Speech recognition error';
+            if (event.error === 'no-speech') {
+                errorMsg = 'No speech detected';
+            } else if (event.error === 'audio-capture') {
+                errorMsg = 'No microphone found';
+            } else if (event.error === 'not-allowed') {
+                errorMsg = 'Microphone access denied';
+            }
+            
+            showVoiceStatus(errorMsg, 'error');
+            stopRecording();
+        }
+
+        // Handle speech recognition end
+        function handleSpeechEnd() {
+            isRecording = false;
+            clearTimeout(silenceTimer);
+            
+            const voiceBtn = document.getElementById('voice-toggle-button');
+            voiceBtn.classList.remove('recording');
+            voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+            
+            // 不自动发送，只显示状态
+            if (finalTranscript.trim()) {
+                showVoiceStatus('Speech recognized. Click Send to execute.', 'ready');
+            } else {
+                showVoiceStatus('Click microphone to start voice input', 'ready');
+            }
+        }
+
+        // Start recording
+        function startRecording() {
+            if (!isRecording) {
+                if (!speechRecognition || speechRecognition.lang !== document.getElementById('voice-language').value) {
+                    if (!initSpeechRecognition()) return;
+                }
+                
+                try {
+                    finalTranscript = '';
+                    speechRecognition.start();
+                    isRecording = true;
+                    
+                    const voiceBtn = document.getElementById('voice-toggle-button');
+                    voiceBtn.classList.add('recording');
+                    voiceBtn.innerHTML = '<i class="fas fa-stop"></i>';
+                    
+                    showVoiceStatus('Recording... Speak now', 'recording');
+                    
+                    silenceTimer = setTimeout(() => {
+                        if (isRecording) {
+                            showVoiceStatus('No speech detected, stopping', 'error');
+                            stopRecording();
+                        }
+                    }, 10000);
+                    
+                } catch (error) {
+                    showVoiceStatus('Error: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Stop recording
+        function stopRecording() {
+            if (isRecording && speechRecognition) {
+                try {
+                    speechRecognition.stop();
+                } catch (error) {
+                    console.error('Error stopping speech:', error);
+                }
+                
+                isRecording = false;
+                clearTimeout(silenceTimer);
+                
+                const voiceBtn = document.getElementById('voice-toggle-button');
+                voiceBtn.classList.remove('recording');
+                voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+            }
+        }
+
+        // Show voice status
+        function showVoiceStatus(message, type) {
+            const statusDiv = document.getElementById('voice-status');
+            statusDiv.textContent = message;
+            statusDiv.className = 'voice-status ' + type;
+        }
+
+        // Toggle recording
+        function toggleRecording() {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        }
+
+        // Send command
+        async function sendCommand() {
+            const systemPrompt = document.getElementById('system-prompt').value;
+            const chatInput = document.getElementById('chat-input');
+            const userPrompt = chatInput.value.trim();
+            const functionUrl = document.getElementById('function-url').value;
+            const responseDiv = document.getElementById('response');
+            const statusDiv = document.getElementById('status');
+            const sendButton = document.getElementById('chat-send-button');
+            
+            if (!userPrompt) return;
+            
+            statusDiv.className = 'system-status processing';
+            statusDiv.innerHTML = '<div class="loading"></div> Processing command...';
+            
+            sendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            sendButton.disabled = true;
+            responseDiv.textContent = 'Sending...';
+            
+            try {
+                let completePrompt = userPrompt;
+                if (chatHistory.length > 0) {
+                    completePrompt = "Previous commands:\n";
+                    chatHistory.forEach(entry => {
+                        completePrompt += `User: ${entry.user}\n`;
+                        completePrompt += `Response: ${entry.response}\n\n`;
+                    });
+                    completePrompt += `Current: ${userPrompt}`;
+                }
+                
+                const response = await fetch(functionUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        "user_prompt": completePrompt,
+                        ...(systemPrompt ? {"system_prompt": systemPrompt} : {})
+                    })
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const data = await response.text();
+                responseDiv.textContent = data;
+                addToChatHistory(userPrompt, data);
+                
+                statusDiv.className = 'system-status';
+                statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Command executed';
+                
+            } catch (error) {
+                responseDiv.textContent = `Error: ${error.message}`;
+                addToChatHistory(userPrompt, `Error: ${error.message}`);
+                
+                statusDiv.className = 'system-status error';
+                statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Failed';
+                
+            } finally {
+                sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>';
+                sendButton.disabled = false;
+                chatInput.value = '';
+                chatInput.focus();
+            }
+        }
+
+        // Add to chat history
+        function addToChatHistory(userPrompt, response) {
+            chatHistory.push({
+                user: userPrompt,
+                response: response,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+            updateChatDisplay();
+        }
+
+        // Update chat display
+        function updateChatDisplay() {
+            const chatHistoryDiv = document.getElementById('chat-history');
+            chatHistoryDiv.innerHTML = '';
+            
+            if (chatHistory.length === 0) {
+                chatHistoryDiv.innerHTML = `
+                    <div class="empty-chat">
+                        <i class="fas fa-robot"></i>
+                        <p>Send a command to control the robot arm</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            chatHistory.forEach(entry => {
+                // User message
+                const userDiv = document.createElement('div');
+                userDiv.className = 'chat-message user-message';
+                userDiv.innerHTML = `
+                    <div class="message-bubble">${entry.user}</div>
+                    <div class="message-time">${entry.time}</div>
+                `;
+                chatHistoryDiv.appendChild(userDiv);
+                
+                // Response
+                const respDiv = document.createElement('div');
+                respDiv.className = 'chat-message response-message';
+                respDiv.innerHTML = `
+                    <div class="message-bubble">${entry.response}</div>
+                    <div class="message-time">${entry.time}</div>
+                `;
+                chatHistoryDiv.appendChild(respDiv);
+            });
+            
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check speech support
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                document.getElementById('voice-toggle-button').disabled = true;
+                document.getElementById('voice-example').style.display = 'none';
+            }
+            
+            showVoiceStatus('Click microphone for voice input', 'ready');
+        });
+
+        // Send button
+        document.getElementById('chat-send-button').addEventListener('click', sendCommand);
+
+        // Enter key in chat input
+        document.getElementById('chat-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendCommand();
+        });
+
+        // Voice toggle
+        document.getElementById('voice-toggle-button').addEventListener('click', toggleRecording);
+
+        // Voice language change
+        document.getElementById('voice-language').addEventListener('change', () => {
+            if (isRecording) {
+                stopRecording();
+                setTimeout(() => startRecording(), 100);
+            }
+        });
+
+        // Voice example chip
+        document.getElementById('voice-example').addEventListener('click', () => {
+            if (!isRecording) startRecording();
+        });
+
+        // Example chips
+        document.querySelectorAll('.chip:not(#voice-example)').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.getElementById('chat-input').value = chip.textContent;
+                document.getElementById('chat-input').focus();
+            });
+        });
+
+        // Clear chat
+        document.getElementById('reset-button').addEventListener('click', () => {
+            chatHistory = [];
+            updateChatDisplay();
+            document.getElementById('response').textContent = 'Waiting for command...';
+            document.getElementById('status').className = 'system-status';
+            document.getElementById('status').innerHTML = '<i class="fas fa-info-circle"></i> Ready for commands';
+            
+            if (isRecording) stopRecording();
+            showVoiceStatus('Click microphone for voice input', 'ready');
+        });
+
         // Toggle system prompt
         document.getElementById('toggle-system-prompt').addEventListener('click', () => {
             const container = document.getElementById('system-prompt-container');
@@ -1756,6 +2215,25 @@ Do not append extra commands beyond what the user requests.</textarea>
         
         // Check for saved theme preference or default to dark mode
         const currentTheme = localStorage.getItem('theme') || 'dark';
+        if (currentTheme === 'light') {
+            body.classList.add('light-mode');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            
+            if (body.classList.contains('light-mode')) {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('theme', 'light');
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+    </script>
+</body>
+</html>
         if (currentTheme === 'light') {
             body.classList.add('light-mode');
             themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
