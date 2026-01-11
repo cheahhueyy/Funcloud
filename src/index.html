@@ -144,6 +144,190 @@
             gap: 8px;
         }
 
+        /* Arm Status Panel */
+        .arm-status-container {
+            margin-top: 20px;
+        }
+
+        .arm-status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .servo-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .servo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .servo-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .servo-value {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--accent-color);
+        }
+
+        .servo-progress {
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .servo-progress-bar {
+            height: 100%;
+            background: var(--accent-color);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .servo-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .servo-range {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        .angle-display {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            color: var(--accent-color);
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .servo-controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .angle-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: var(--accent-color);
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .angle-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.1);
+        }
+
+        .angle-btn:active {
+            transform: scale(0.95);
+        }
+
+        .reset-btn {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .reset-btn:hover {
+            background: var(--hover-bg);
+        }
+
+        .angle-input {
+            width: 100px;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        .angle-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .status-update {
+            padding: 12px;
+            background: rgba(16, 185, 129, 0.15);
+            border-radius: 8px;
+            font-size: 14px;
+            margin-top: 12px;
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .status-update.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--error-color);
+            border-left-color: var(--error-color);
+        }
+
+        .history-container {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        .history-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-time {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-right: 12px;
+        }
+
+        .history-action {
+            color: var(--text-primary);
+        }
+
         /* Form Elements */
         .input-group {
             margin-bottom: 16px;
@@ -235,6 +419,10 @@
 
         @media (max-width: 768px) {
             .interface-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .arm-status-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -633,7 +821,7 @@ Directional keywords:
 
 Vague commands: Assume 1 step (5°)
 
-Compound actions: e.g., “grab object” = lower_arm + claw_close
+Compound actions: e.g., "grab object" = lower_arm + claw_close
 
 Multiple commands in one sentence: Process in natural language order
 
@@ -654,11 +842,11 @@ If no historical data exists, output: "cannot do".
 🟢 Easy Tasks
 
 1. Rotate base to 180°, then return back to 90°
-User: “Rotate base to 180 degrees, then return to 90 degrees.”
+User: "Rotate base to 180 degrees, then return to 90 degrees."
 → base_right (18 steps), then base_left (18 steps)
 
 2.Cose and Open the Claw
-User: “Close the claw fully, then open it again.”
+User: "Close the claw fully, then open it again."
 → claw_close →  claw_open
 
 🟡 Medium Tasks
@@ -713,9 +901,9 @@ Do not append extra commands beyond what the user requests.</textarea>
                     
                     <div class="example-chips">
                         <div class="chip">Move base left 30°</div>
-                        <div class="chip">Close claw</div>
                         <div class="chip">Open claw</div>
-                        <div class="chip">Return to initial</div>
+                        <div class="chip">Return to start</div>
+                        <div class="chip">Grab and move</div>
                         <div class="chip voice-chip" id="voice-example">
                             <i class="fas fa-microphone"></i> Voice
                         </div>
@@ -762,6 +950,99 @@ Do not append extra commands beyond what the user requests.</textarea>
                 </div>
             </div>
         </div>
+
+        <!-- Arm Status Panel -->
+        <div class="panel arm-status-container">
+            <h2 class="panel-title"><i class="fas fa-robot"></i> Arm Status & Positions</h2>
+            
+            <div class="arm-status-grid">
+                <!-- Servo 1: Base Rotation -->
+                <div class="servo-card" data-servo="base">
+                    <div class="servo-header">
+                        <div class="servo-name">Base Rotation (Servo 1)</div>
+                        <div class="servo-value" id="base-angle">90°</div>
+                    </div>
+                    <div class="servo-progress">
+                        <div class="servo-progress-bar" id="base-progress" style="width: 50%"></div>
+                    </div>
+                    <div class="servo-info">
+                        <div>Current: <span id="base-current">90°</span></div>
+                        <div>Range: 0° - 180°</div>
+                    </div>
+                    <div class="servo-range">
+                        <span>0° (Left)</span>
+                        <span>180° (Right)</span>
+                    </div>
+                </div>
+                
+                <!-- Servo 2: Lower Arm -->
+                <div class="servo-card" data-servo="lower">
+                    <div class="servo-header">
+                        <div class="servo-name">Lower Arm (Servo 2)</div>
+                        <div class="servo-value" id="lower-angle">0°</div>
+                    </div>
+                    <div class="servo-progress">
+                        <div class="servo-progress-bar" id="lower-progress" style="width: 0%"></div>
+                    </div>
+                    <div class="servo-info">
+                        <div>Current: <span id="lower-current">0°</span></div>
+                        <div>Range: 0° - 90°</div>
+                    </div>
+                    <div class="servo-range">
+                        <span>0° (Backward/Up)</span>
+                        <span>90° (Forward/Down)</span>
+                    </div>
+                </div>
+                
+                <!-- Servo 3: Upper Arm -->
+                <div class="servo-card" data-servo="upper">
+                    <div class="servo-header">
+                        <div class="servo-name">Upper Arm (Servo 3)</div>
+                        <div class="servo-value" id="upper-angle">90°</div>
+                    </div>
+                    <div class="servo-progress">
+                        <div class="servo-progress-bar" id="upper-progress" style="width: 50%"></div>
+                    </div>
+                    <div class="servo-info">
+                        <div>Current: <span id="upper-current">90°</span></div>
+                        <div>Range: 0° - 180°</div>
+                    </div>
+                    <div class="servo-range">
+                        <span>0° (Down)</span>
+                        <span>180° (Up)</span>
+                    </div>
+                </div>
+                
+                <!-- Servo 4: Claw -->
+                <div class="servo-card" data-servo="claw">
+                    <div class="servo-header">
+                        <div class="servo-name">Claw (Servo 4)</div>
+                        <div class="servo-value" id="claw-angle">90°</div>
+                    </div>
+                    <div class="servo-progress">
+                        <div class="servo-progress-bar" id="claw-progress" style="width: 100%"></div>
+                    </div>
+                    <div class="servo-info">
+                        <div>Current: <span id="claw-current">90°</span></div>
+                        <div>Range: 20° - 90°</div>
+                    </div>
+                    <div class="servo-range">
+                        <span>20° (Closed)</span>
+                        <span>90° (Open)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="status-update" id="arm-status-message">
+                <i class="fas fa-info-circle"></i>
+                All servos are at their initial positions
+            </div>
+            
+            <div class="history-container">
+                <div class="history-title">Movement History</div>
+                <div id="movement-history"></div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -773,6 +1054,306 @@ Do not append extra commands beyond what the user requests.</textarea>
         let isRecording = false;
         let finalTranscript = '';
         let silenceTimer = null;
+
+        // Arm status variables
+        let armStatus = {
+            base: 90,    // Servo 1: Base rotation (0-180)
+            lower: 0,    // Servo 2: Lower arm (0-90)
+            upper: 90,   // Servo 3: Upper arm (0-180)
+            claw: 90     // Servo 4: Claw (20-90)
+        };
+
+        const stepSize = 5; // 1 step = 5 degrees
+        const initialPositions = { base: 90, lower: 0, upper: 90, claw: 90 };
+        const clawClosed = 20;
+        const clawOpen = 90;
+
+        // Movement history
+        let movementHistory = [];
+
+        // Initialize arm status display
+        function initArmStatus() {
+            updateArmDisplay();
+            
+            // Load from localStorage if available
+            const savedStatus = localStorage.getItem('armStatus');
+            if (savedStatus) {
+                const parsed = JSON.parse(savedStatus);
+                armStatus = { ...armStatus, ...parsed };
+                updateArmDisplay();
+            }
+            
+            // Load history from localStorage
+            const savedHistory = localStorage.getItem('movementHistory');
+            if (savedHistory) {
+                movementHistory = JSON.parse(savedHistory);
+                updateHistoryDisplay();
+            }
+        }
+
+        // Update arm angles based on JSON command
+        function updateArmFromJSON(jsonString) {
+            try {
+                let jsonData;
+                // Try to parse as single object or array
+                try {
+                    jsonData = JSON.parse(jsonString);
+                } catch (e) {
+                    // If not valid JSON, try to extract JSON from text
+                    const jsonMatch = jsonString.match(/\{[\s\S]*?\}/);
+                    if (jsonMatch) {
+                        jsonData = JSON.parse(jsonMatch[0]);
+                    } else {
+                        console.log('No valid JSON found in response');
+                        return;
+                    }
+                }
+                
+                // Handle both single object and array
+                const sequences = Array.isArray(jsonData) ? jsonData : [jsonData];
+                
+                let movements = [];
+                
+                sequences.forEach(sequenceObj => {
+                    if (sequenceObj.command === 'robot_arm' && sequenceObj.sequence) {
+                        sequenceObj.sequence.forEach(action => {
+                            const { action: actionName, steps } = action;
+                            const stepValue = parseInt(steps) || 1;
+                            const degreeChange = stepValue * stepSize;
+                            
+                            let previousAngle;
+                            
+                            switch(actionName) {
+                                case 'base_left':
+                                    previousAngle = armStatus.base;
+                                    armStatus.base = Math.max(0, armStatus.base - degreeChange);
+                                    movements.push({
+                                        servo: 'base',
+                                        action: 'base_left',
+                                        steps: stepValue,
+                                        degrees: degreeChange,
+                                        from: previousAngle,
+                                        to: armStatus.base,
+                                        time: new Date().toLocaleTimeString()
+                                    });
+                                    break;
+                                    
+                                case 'base_right':
+                                    previousAngle = armStatus.base;
+                                    armStatus.base = Math.min(180, armStatus.base + degreeChange);
+                                    movements.push({
+                                        servo: 'base',
+                                        action: 'base_right',
+                                        steps: stepValue,
+                                        degrees: degreeChange,
+                                        from: previousAngle,
+                                        to: armStatus.base,
+                                        time: new Date().toLocaleTimeString()
+                                    });
+                                    break;
+                                    
+                                case 'lower_up':
+                                    previousAngle = armStatus.lower;
+                                    armStatus.lower = Math.max(0, armStatus.lower - degreeChange);
+                                    movements.push({
+                                        servo: 'lower',
+                                        action: 'lower_up',
+                                        steps: stepValue,
+                                        degrees: degreeChange,
+                                        from: previousAngle,
+                                        to: armStatus.lower,
+                                        time: new Date().toLocaleTimeString()
+                                    });
+                                    break;
+                                    
+                                case 'lower_down':
+                                    previousAngle = armStatus.lower;
+                                    armStatus.lower = Math.min(90, armStatus.lower + degreeChange);
+                                    movements.push({
+                                        servo: 'lower',
+                                        action: 'lower_down',
+                                        steps: stepValue,
+                                        degrees: degreeChange,
+                                        from: previousAngle,
+                                        to: armStatus.lower,
+                                        time: new Date().toLocaleTimeString()
+                                    });
+                                    break;
+                                    
+                                case 'upper_up':
+                                    previousAngle = armStatus.upper;
+                                    armStatus.upper = Math.min(180, armStatus.upper + degreeChange);
+                                    movements.push({
+                                        servo: 'upper',
+                                        action: 'upper_up',
+                                        steps: stepValue,
+                                        degrees: degreeChange,
+                                        from: previousAngle,
+                                        to: armStatus.upper,
+                                        time: new Date().toLocaleTimeString()
+                                    });
+                                    break;
+                                    
+                                case 'upper_down':
+                                    previousAngle = armStatus.upper;
+                                    armStatus.upper = Math.max(0, armStatus.upper - degreeChange);
+                                    movements.push({
+                                        servo: 'upper',
+                                        action: 'upper_down',
+                                        steps: stepValue,
+                                        degrees: degreeChange,
+                                        from: previousAngle,
+                                        to: armStatus.upper,
+                                        time: new Date().toLocaleTimeString()
+                                    });
+                                    break;
+                                    
+                                case 'claw_close':
+                                    previousAngle = armStatus.claw;
+                                    // Calculate steps to reach closed position (20°)
+                                    const closeDegrees = Math.min(degreeChange, Math.abs(armStatus.claw - clawClosed));
+                                    armStatus.claw = Math.max(clawClosed, armStatus.claw - closeDegrees);
+                                    movements.push({
+                                        servo: 'claw',
+                                        action: 'claw_close',
+                                        steps: stepValue,
+                                        degrees: closeDegrees,
+                                        from: previousAngle,
+                                        to: armStatus.claw,
+                                        time: new Date().toLocaleTimeString()
+                                    });
+                                    break;
+                                    
+                                case 'claw_open':
+                                    previousAngle = armStatus.claw;
+                                    // Calculate steps to reach open position (90°)
+                                    const openDegrees = Math.min(degreeChange, Math.abs(clawOpen - armStatus.claw));
+                                    armStatus.claw = Math.min(clawOpen, armStatus.claw + openDegrees);
+                                    movements.push({
+                                        servo: 'claw',
+                                        action: 'claw_open',
+                                        steps: stepValue,
+                                        degrees: openDegrees,
+                                        from: previousAngle,
+                                        to: armStatus.claw,
+                                        time: new Date().toLocaleTimeString()
+                                    });
+                                    break;
+                            }
+                        });
+                    }
+                });
+                
+                if (movements.length > 0) {
+                    // Add to history
+                    movements.forEach(move => {
+                        movementHistory.unshift(move);
+                        if (movementHistory.length > 10) {
+                            movementHistory.pop();
+                        }
+                    });
+                    
+                    // Save to localStorage
+                    localStorage.setItem('armStatus', JSON.stringify(armStatus));
+                    localStorage.setItem('movementHistory', JSON.stringify(movementHistory));
+                    
+                    // Update displays
+                    updateArmDisplay();
+                    updateHistoryDisplay();
+                    
+                    // Show status message
+                    const statusMsg = document.getElementById('arm-status-message');
+                    const lastMove = movements[0];
+                    statusMsg.innerHTML = `
+                        <i class="fas fa-arrow-right"></i>
+                        ${lastMove.servo} moved ${lastMove.degrees}° (${lastMove.steps} steps) 
+                        from ${lastMove.from}° to ${lastMove.to}°
+                    `;
+                    statusMsg.className = 'status-update';
+                    
+                    setTimeout(() => {
+                        statusMsg.innerHTML = '<i class="fas fa-info-circle"></i> Arm status updated';
+                    }, 3000);
+                }
+                
+            } catch (error) {
+                console.error('Error updating arm status:', error);
+            }
+        }
+
+        // Update the arm display
+        function updateArmDisplay() {
+            // Update angle displays
+            document.getElementById('base-angle').textContent = `${armStatus.base}°`;
+            document.getElementById('lower-angle').textContent = `${armStatus.lower}°`;
+            document.getElementById('upper-angle').textContent = `${armStatus.upper}°`;
+            document.getElementById('claw-angle').textContent = `${armStatus.claw}°`;
+            
+            document.getElementById('base-current').textContent = `${armStatus.base}°`;
+            document.getElementById('lower-current').textContent = `${armStatus.lower}°`;
+            document.getElementById('upper-current').textContent = `${armStatus.upper}°`;
+            document.getElementById('claw-current').textContent = `${armStatus.claw}°`;
+            
+            // Update progress bars
+            document.getElementById('base-progress').style.width = `${(armStatus.base / 180) * 100}%`;
+            document.getElementById('lower-progress').style.width = `${(armStatus.lower / 90) * 100}%`;
+            document.getElementById('upper-progress').style.width = `${(armStatus.upper / 180) * 100}%`;
+            document.getElementById('claw-progress').style.width = `${((armStatus.claw - 20) / 70) * 100}%`;
+        }
+
+        // Update movement history display
+        function updateHistoryDisplay() {
+            const historyDiv = document.getElementById('movement-history');
+            historyDiv.innerHTML = '';
+            
+            if (movementHistory.length === 0) {
+                historyDiv.innerHTML = '<div class="history-item">No movements recorded yet</div>';
+                return;
+            }
+            
+            movementHistory.forEach(move => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                
+                let actionText = '';
+                switch(move.action) {
+                    case 'base_left': actionText = `Base left ${move.steps} steps`; break;
+                    case 'base_right': actionText = `Base right ${move.steps} steps`; break;
+                    case 'lower_up': actionText = `Lower arm up ${move.steps} steps`; break;
+                    case 'lower_down': actionText = `Lower arm down ${move.steps} steps`; break;
+                    case 'upper_up': actionText = `Upper arm up ${move.steps} steps`; break;
+                    case 'upper_down': actionText = `Upper arm down ${move.steps} steps`; break;
+                    case 'claw_close': actionText = `Claw close ${move.steps} steps`; break;
+                    case 'claw_open': actionText = `Claw open ${move.steps} steps`; break;
+                }
+                
+                item.innerHTML = `
+                    <span class="history-time">${move.time}</span>
+                    <span class="history-action">${actionText} (${move.from}° → ${move.to}°)</span>
+                `;
+                historyDiv.appendChild(item);
+            });
+        }
+
+        // Reset arm to initial positions
+        function resetArmToInitial() {
+            armStatus = { ...initialPositions };
+            
+            // Save to localStorage
+            localStorage.setItem('armStatus', JSON.stringify(armStatus));
+            
+            // Update displays
+            updateArmDisplay();
+            
+            // Show status message
+            const statusMsg = document.getElementById('arm-status-message');
+            statusMsg.innerHTML = '<i class="fas fa-undo"></i> Arm reset to initial positions';
+            statusMsg.className = 'status-update';
+            
+            setTimeout(() => {
+                statusMsg.innerHTML = '<i class="fas fa-info-circle"></i> All servos at initial positions';
+            }, 3000);
+        }
 
         // Initialize speech recognition
         function initSpeechRecognition() {
@@ -964,6 +1545,11 @@ Do not append extra commands beyond what the user requests.</textarea>
                 
                 const data = await response.text();
                 responseDiv.textContent = data;
+                
+                // Update arm status based on the returned JSON
+                updateArmFromJSON(data);
+                
+                // Add to chat history
                 addToChatHistory(userPrompt, data);
                 
                 statusDiv.className = 'system-status';
@@ -1041,6 +1627,14 @@ Do not append extra commands beyond what the user requests.</textarea>
             }
             
             showVoiceStatus('Click microphone for voice input', 'ready');
+            
+            // Initialize arm status
+            initArmStatus();
+            
+            // Add reset button functionality
+            document.getElementById('reset-button').addEventListener('click', () => {
+                resetArmToInitial();
+            });
         });
 
         // Send button
