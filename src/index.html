@@ -12,366 +12,511 @@
             box-sizing: border-box;
         }
 
+        /* Theme variables */
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #10b981;
-            --dark: #0f172a;
-            --darker: #0a0f1c;
-            --light: #f8fafc;
-            --gray: #64748b;
-            --gray-dark: #334155;
-            --success: #10b981;
-            --error: #ef4444;
-            --warning: #f59e0b;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #0f172a;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --accent-color: #4f46e5;
+            --accent-hover: #4338ca;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --panel-bg: #1e293b;
+            --input-bg: #0f172a;
+            --hover-bg: #475569;
+        }
+
+        body.light-mode {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --accent-color: #4f46e5;
+            --accent-hover: #4338ca;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --panel-bg: #ffffff;
+            --input-bg: #f8fafc;
+            --hover-bg: #e2e8f0;
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
-            color: var(--light);
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.6;
+            padding: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem;
         }
 
+        /* Header */
         .header {
             text-align: center;
-            margin-bottom: 3rem;
-            position: relative;
+            margin-bottom: 30px;
         }
 
         .title {
-            font-size: 3.2rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.5px;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
 
         .subtitle {
-            font-size: 1.1rem;
-            color: var(--gray);
-            margin-bottom: 2rem;
-            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
         }
 
-        .status-indicator {
+        .status-bar {
             display: flex;
-            align-items: center;
             justify-content: center;
-            gap: 1rem;
-            margin-top: 1.5rem;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
         .status-item {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            color: var(--gray);
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
         }
 
         .status-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            background-color: var(--success);
-            animation: pulse 2s infinite;
+            background: var(--success-color);
         }
 
-        .status-dot.offline {
-            background-color: var(--error);
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .config-section {
-            margin-bottom: 1rem;
-        }
-
-        .interface-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-
-        .panel {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 2rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            height: fit-content;
-        }
-
-        .panel:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-            border-color: rgba(99, 102, 241, 0.3);
-        }
-
-        .panel-header {
+        .theme-toggle {
+            background: var(--panel-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .theme-toggle:hover {
+            background: var(--hover-bg);
+            transform: rotate(20deg);
+        }
+
+        .theme-toggle i {
+            font-size: 16px;
+        }
+
+        /* Panels */
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
         }
 
         .panel-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--light);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
-        .panel-title i {
-            color: var(--primary);
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
+        /* Form Elements */
+        .input-group {
+            margin-bottom: 16px;
         }
 
         label {
             display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--light);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-primary);
         }
 
-        .input-group {
-            position: relative;
-        }
-
-        input, textarea {
+        input, textarea, select {
             width: 100%;
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1rem;
-            color: var(--light);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
+            padding: 10px 12px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
         }
 
         textarea {
             min-height: 120px;
             resize: vertical;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
         }
 
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-            background: rgba(30, 41, 59, 0.8);
-        }
-
-        .button-group {
-            display: flex;
-            gap: 0.75rem;
-            justify-content: flex-end;
-            margin-top: 1.5rem;
-        }
-
+        /* Buttons */
         .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            padding: 10px 16px;
+            border-radius: 6px;
             border: none;
-            display: flex;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 6px;
+            transition: all 0.2s;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: var(--accent-color);
             color: white;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            background: var(--accent-hover);
         }
 
         .btn-secondary {
-            background: rgba(30, 41, 59, 0.7);
-            color: var(--light);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--border-color);
+            color: var(--text-primary);
         }
 
         .btn-secondary:hover {
-            background: rgba(30, 41, 59, 0.9);
-            border-color: rgba(255, 255, 255, 0.2);
+            background: var(--hover-bg);
         }
 
-        .btn-danger {
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--error);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-danger:hover {
-            background: rgba(239, 68, 68, 0.3);
-        }
-
-        .toggle-button {
-            background: rgba(30, 41, 59, 0.7);
-            color: var(--light);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 600;
+        .toggle-btn {
+            background: var(--border-color);
+            color: var(--text-primary);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            font-size: 13px;
+            transition: all 0.2s;
         }
 
-        .toggle-button:hover {
-            background: rgba(30, 41, 59, 0.9);
+        .toggle-btn:hover {
+            background: var(--hover-bg);
         }
 
-        #system-prompt-container {
-            transition: all 0.3s ease;
-            overflow: hidden;
-            margin-top: 1rem;
+        /* Grid Layout */
+        .interface-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
-        #system-prompt-container.show {
-            display: block !important;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        #system-prompt-container.hide {
-            animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                max-height: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                max-height: 500px;
-                transform: translateY(0);
+        @media (max-width: 768px) {
+            .interface-grid {
+                grid-template-columns: 1fr;
             }
         }
 
-        @keyframes slideUp {
-            from {
-                opacity: 1;
-                max-height: 500px;
-                transform: translateY(0);
-            }
-            to {
-                opacity: 0;
-                max-height: 0;
-                transform: translateY(-10px);
-            }
-        }
-
-        .response-container {
+        /* Chat Interface */
+        .chat-area {
             display: flex;
             flex-direction: column;
-            height: 100%;
         }
 
-        .response-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--light);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 1.5rem;
-        }
-
-        .response-title i {
-            color: var(--secondary);
-        }
-
-        .output {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
-            font-family: 'JetBrains Mono', 'Courier New', monospace;
-            font-size: 0.9rem;
-            white-space: pre-wrap;
-            min-height: 300px;
-            color: var(--light);
-            flex-grow: 1;
+        .chat-history {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
             overflow-y: auto;
+            min-height: 300px;
+            max-height: 400px;
             transition: all 0.3s ease;
         }
 
-        .status {
-            margin-top: 1rem;
-            padding: 1rem;
+        .empty-chat {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 40px 20px;
+        }
+
+        .empty-chat i {
+            font-size: 32px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .chat-message {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-message {
+            align-items: flex-end;
+        }
+
+        .response-message {
+            align-items: flex-start;
+        }
+
+        .message-bubble {
+            padding: 10px 14px;
             border-radius: 12px;
-            font-weight: 600;
+            max-width: 85%;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+
+        .user-message .message-bubble {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .response-message .message-bubble {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Example Chips */
+        .example-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .chip {
+            background: var(--border-color);
+            border-radius: 16px;
+            padding: 6px 12px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chip:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
+
+        .voice-chip {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .voice-chip:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Voice Controls */
+        .voice-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .voice-language {
+            flex: 1;
+        }
+
+        .voice-btn {
+            background: var(--border-color);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 6px;
+            padding: 10px;
+            width: 48px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .voice-btn:hover {
+            background: var(--hover-bg);
+        }
+
+        .voice-btn.recording {
+            background: var(--error-color);
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .voice-status {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 8px;
+            display: none;
+        }
+
+        .voice-status.recording {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            display: block;
+        }
+
+        body.light-mode .voice-status.recording {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .voice-status.ready {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            display: block;
+        }
+
+        body.light-mode .voice-status.ready {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .voice-status.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            display: block;
+        }
+
+        body.light-mode .voice-status.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        /* Input Area */
+        .input-area {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .chat-input {
+            flex: 1;
+        }
+
+        .send-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            width: 48px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .send-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        /* Response Area */
+        .response-output {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            min-height: 300px;
+            max-height: 400px;
+            margin-bottom: 16px;
+            color: var(--text-secondary);
             transition: all 0.3s ease;
-            opacity: 0;
-            transform: translateY(10px);
+        }
+
+        /* System Status */
+        .system-status {
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
         }
 
-        .status.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .success {
+        body.light-mode .system-status {
             background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: var(--success);
+            color: #059669;
         }
 
-        .error {
+        .system-status.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+        }
+
+        body.light-mode .system-status.error {
             background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: var(--error);
+            color: #dc2626;
         }
 
+        .system-status.processing {
+            background: rgba(79, 70, 229, 0.15);
+            color: #a5b4fc;
+        }
+
+        body.light-mode .system-status.processing {
+            background: rgba(79, 70, 229, 0.1);
+            color: #4f46e5;
+        }
+
+        /* Loading Spinner */
         .loading {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(99, 102, 241, 0.3);
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border-color);
             border-radius: 50%;
-            border-top-color: var(--primary);
+            border-top-color: var(--accent-color);
             animation: spin 1s linear infinite;
         }
 
@@ -379,228 +524,28 @@
             to { transform: rotate(360deg); }
         }
 
-        .floating-icons {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            pointer-events: none;
-            z-index: -1;
+        /* Config Section Specific */
+        #system-prompt-container {
+            margin-top: 8px;
         }
 
-        .floating-icon {
-            position: absolute;
-            opacity: 0.03;
-            animation: float 20s linear infinite;
-            font-size: 24px;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-            }
-            100% {
-                transform: translateY(-100px) rotate(360deg);
-            }
-        }
-
-        @media (max-width: 1024px) {
-            .interface-section {
-                grid-template-columns: 1fr;
-            }
-            
-            .title {
-                font-size: 2.5rem;
-            }
-            
-            .container {
-                padding: 1.5rem;
-            }
-        }
-
-        /* Chat styles */
-        .chat-container {
+        .input-group > div:first-child {
             display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .chat-history {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            height: 350px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .chat-message {
-            display: flex;
-            max-width: 85%;
-            animation: messageAppear 0.3s ease-out;
-        }
-
-        @keyframes messageAppear {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .user-message {
-            align-self: flex-end;
-        }
-
-        .response-message {
-            align-self: flex-start;
-        }
-
-        .message-bubble {
-            padding: 0.75rem 1rem;
-            border-radius: 18px;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            position: relative;
-        }
-
-        .user-message .message-bubble {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            border-bottom-right-radius: 6px;
-        }
-
-        .response-message .message-bubble {
-            background: rgba(30, 41, 59, 0.8);
-            color: var(--light);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-bottom-left-radius: 6px;
-        }
-
-        .message-time {
-            font-size: 0.7rem;
-            opacity: 0.7;
-            margin-top: 0.25rem;
-            text-align: right;
-        }
-
-        .response-message .message-time {
-            text-align: left;
-        }
-
-        .empty-chat {
-            display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: var(--gray);
-            text-align: center;
-            gap: 1rem;
         }
 
-        .empty-chat i {
-            font-size: 2rem;
-            opacity: 0.5;
-        }
-
-        .chat-input-container {
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .chat-input {
-            flex-grow: 1;
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 0.9rem 1rem;
-            color: var(--light);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-        }
-
-        .chat-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-        }
-
-        .chat-send-button {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            width: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .chat-send-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
-        }
-
-        .chat-send-button:active {
-            transform: translateY(0);
-        }
-
-        .command-examples {
-            margin-top: 1rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .example-chip {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 0.4rem 0.8rem;
-            font-size: 0.8rem;
-            color: var(--gray);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .example-chip:hover {
-            background: rgba(99, 102, 241, 0.2);
-            color: var(--light);
-            border-color: var(--primary);
+        .input-group > div:first-child label {
+            margin-bottom: 0;
         }
     </style>
 </head>
 <body>
-    <div class="floating-icons">
-        <div class="floating-icon" style="left: 10%; animation-delay: 0s;"><i class="fas fa-robot"></i></div>
-        <div class="floating-icon" style="left: 20%; animation-delay: 2s;"><i class="fas fa-cog"></i></div>
-        <div class="floating-icon" style="left: 30%; animation-delay: 4s;"><i class="fas fa-microchip"></i></div>
-        <div class="floating-icon" style="left: 40%; animation-delay: 6s;"><i class="fas fa-code"></i></div>
-        <div class="floating-icon" style="left: 50%; animation-delay: 8s;"><i class="fas fa-brain"></i></div>
-        <div class="floating-icon" style="left: 60%; animation-delay: 10s;"><i class="fas fa-robot"></i></div>
-        <div class="floating-icon" style="left: 70%; animation-delay: 12s;"><i class="fas fa-cog"></i></div>
-        <div class="floating-icon" style="left: 80%; animation-delay: 14s;"><i class="fas fa-microchip"></i></div>
-        <div class="floating-icon" style="left: 90%; animation-delay: 16s;"><i class="fas fa-code"></i></div>
-    </div>
-
     <div class="container">
         <header class="header">
             <h1 class="title">Robot Arm Controller</h1>
-            <p class="subtitle">Advanced AI-Powered Control Interface</p>
-            <div class="status-indicator">
+            <p class="subtitle">Control your robotic arm with voice or text commands</p>
+            <div class="status-bar">
                 <div class="status-item">
                     <div class="status-dot"></div>
                     <span>System Online</span>
@@ -613,31 +558,27 @@
                     <div class="status-dot"></div>
                     <span>Arm Ready</span>
                 </div>
+                <button id="theme-toggle" class="theme-toggle" title="Toggle theme">
+                    <i class="fas fa-sun"></i>
+                </button>
             </div>
         </header>
 
-        <div class="main-content">
-            <!-- Configuration Panel -->
-            <div class="panel config-section">
-                <div class="panel-header">
-                    <h2 class="panel-title"><i class="fas fa-sliders-h"></i> Configuration</h2>
+        <div class="panel">
+            <h2 class="panel-title"><i class="fas fa-sliders-h"></i> Configuration</h2>
+            
+            <div class="input-group">
+                <label for="function-url">Azure Function URL</label>
+                <input type="text" id="function-url" value="https://raspizero-1.azurewebsites.net/api/http_trigger_pi">
+            </div>
+            
+            <div class="input-group">
+                <div>
+                    <label for="system-prompt">System Instructions</label>
+                    <button id="toggle-system-prompt" class="toggle-btn">Show</button>
                 </div>
-                
-                <div class="form-group">
-                    <label for="function-url">Azure Function URL</label>
-                    <div class="input-group">
-                        <input type="text" id="function-url" 
-                               value="https://raspizero-1.azurewebsites.net/api/http_trigger_pi">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <label for="system-prompt" style="margin-bottom: 0;">System Instructions</label>
-                        <button id="toggle-system-prompt" class="toggle-button">Show Instructions</button>
-                    </div>
-                    <div id="system-prompt-container" style="display: none;">
-                        <textarea id="system-prompt">You are a command interpreter for a cloud-connected Raspberry Pi device that controls a 4-DOF robotic arm through an Arduino.
+                <div id="system-prompt-container" style="display: none;">
+                    <textarea id="system-prompt">You are a command interpreter for a cloud-connected Raspberry Pi device that controls a 4-DOF robotic arm through an Arduino.
 
 Your job is to convert natural language commands into a structured JSON format that the device can understand.
 
@@ -753,59 +694,70 @@ Always calculate steps from current servo positions, never assume starting from 
 Always use minimal movement paths.
 
 Do not append extra commands beyond what the user requests.</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="interface-grid">
+            <!-- Command Interface -->
+            <div class="panel">
+                <h2 class="panel-title"><i class="fas fa-comments"></i> Command Interface</h2>
+                
+                <div class="chat-area">
+                    <div id="chat-history" class="chat-history">
+                        <div class="empty-chat">
+                            <i class="fas fa-robot"></i>
+                            <p>Send a command to control the robot arm</p>
+                        </div>
+                    </div>
+                    
+                    <div class="example-chips">
+                        <div class="chip">Move base left 30°</div>
+                        <div class="chip">Open claw</div>
+                        <div class="chip">Return to start</div>
+                        <div class="chip">Grab and move</div>
+                        <div class="chip voice-chip" id="voice-example">
+                            <i class="fas fa-microphone"></i> Voice
+                        </div>
+                    </div>
+                    
+                    <div class="voice-controls">
+                        <select id="voice-language" class="voice-language">
+                            <option value="en-US">English</option>
+                            <option value="zh-CN">Chinese</option>
+                            <option value="ms-MY">Malay</option>
+                        </select>
+                        <button id="voice-toggle-button" class="voice-btn">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="voice-status" class="voice-status"></div>
+                    
+                    <div class="input-area">
+                        <input type="text" id="chat-input" class="chat-input" placeholder="Type your command...">
+                        <button id="chat-send-button" class="send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button id="reset-button" class="btn btn-secondary">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
                     </div>
                 </div>
             </div>
-
-            <!-- Interface Section -->
-            <div class="interface-section">
-                <!-- Command Interface Panel -->
-                <div class="panel chat-panel">
-                    <div class="panel-header">
-                        <h2 class="panel-title"><i class="fas fa-comments"></i> Command Interface</h2>
-                    </div>
-                    
-                    <div class="chat-container">
-                        <div id="chat-history" class="chat-history">
-                            <div class="empty-chat">
-                                <i class="fas fa-robot"></i>
-                                <div>Send a command to control the robot arm</div>
-                            </div>
-                        </div>
-                        
-                        <div class="command-examples">
-                            <div class="example-chip">Move base left 30 degrees</div>
-                            <div class="example-chip">Open claw then lift arm</div>
-                            <div class="example-chip">Return to initial position</div>
-                            <div class="example-chip">Grab object and move right</div>
-                        </div>
-                        
-                        <div class="chat-input-container">
-                            <input type="text" id="chat-input" class="chat-input" placeholder="Type your command here...">
-                            <button id="chat-send-button" class="chat-send-button">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </div>
-                        
-                        <div class="button-group">
-                            <button id="reset-button" class="btn btn-danger">
-                                <i class="fas fa-trash"></i> Clear Chat
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Device Response Panel -->
-                <div class="panel response-panel">
-                    <div class="response-container">
-                        <h2 class="response-title"><i class="fas fa-terminal"></i> Device Response</h2>
-                        
-                        <div id="response" class="output">Waiting for command...</div>
-                        
-                        <div id="status" class="status">
-                            <i class="fas fa-info-circle"></i>
-                            <span>System ready. Send a command to begin.</span>
-                        </div>
+            
+            <!-- Device Response -->
+            <div class="panel">
+                <h2 class="panel-title"><i class="fas fa-terminal"></i> Device Response</h2>
+                
+                <div class="response-area">
+                    <div id="response" class="response-output">Waiting for command...</div>
+                    <div id="status" class="system-status">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Ready for commands</span>
                     </div>
                 </div>
             </div>
@@ -813,10 +765,161 @@ Do not append extra commands beyond what the user requests.</textarea>
     </div>
 
     <script>
-        // Chat history array to store user prompts and responses
+        // Chat history
         let chatHistory = [];
 
-        // Function to send command to the AI
+        // Speech recognition variables
+        let speechRecognition = null;
+        let isRecording = false;
+        let finalTranscript = '';
+        let silenceTimer = null;
+
+        // Initialize speech recognition
+        function initSpeechRecognition() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showVoiceStatus('Speech recognition not supported', 'error');
+                return false;
+            }
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            speechRecognition = new SpeechRecognition();
+            speechRecognition.continuous = true;
+            speechRecognition.interimResults = true;
+            speechRecognition.lang = document.getElementById('voice-language').value;
+            
+            speechRecognition.onresult = handleSpeechResult;
+            speechRecognition.onerror = handleSpeechError;
+            speechRecognition.onend = handleSpeechEnd;
+            
+            return true;
+        }
+
+        // Handle speech recognition result
+        function handleSpeechResult(event) {
+            clearTimeout(silenceTimer);
+            silenceTimer = setTimeout(() => {
+                if (isRecording) {
+                    showVoiceStatus('No speech detected, stopping', 'error');
+                    stopRecording();
+                }
+            }, 10000);
+
+            let interimTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript + ' ';
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+
+            const chatInput = document.getElementById('chat-input');
+            chatInput.value = finalTranscript + interimTranscript;
+            
+            if (interimTranscript) {
+                showVoiceStatus('Listening: ' + interimTranscript, 'recording');
+            }
+        }
+
+        // Handle speech recognition error
+        function handleSpeechError(event) {
+            let errorMsg = 'Speech recognition error';
+            if (event.error === 'no-speech') {
+                errorMsg = 'No speech detected';
+            } else if (event.error === 'audio-capture') {
+                errorMsg = 'No microphone found';
+            } else if (event.error === 'not-allowed') {
+                errorMsg = 'Microphone access denied';
+            }
+            
+            showVoiceStatus(errorMsg, 'error');
+            stopRecording();
+        }
+
+        // Handle speech recognition end
+        function handleSpeechEnd() {
+            isRecording = false;
+            clearTimeout(silenceTimer);
+            
+            const voiceBtn = document.getElementById('voice-toggle-button');
+            voiceBtn.classList.remove('recording');
+            voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+            
+            // 不自动发送，只显示状态
+            if (finalTranscript.trim()) {
+                showVoiceStatus('Speech recognized. Click Send to execute.', 'ready');
+            } else {
+                showVoiceStatus('Click microphone to start voice input', 'ready');
+            }
+        }
+
+        // Start recording
+        function startRecording() {
+            if (!isRecording) {
+                if (!speechRecognition || speechRecognition.lang !== document.getElementById('voice-language').value) {
+                    if (!initSpeechRecognition()) return;
+                }
+                
+                try {
+                    finalTranscript = '';
+                    speechRecognition.start();
+                    isRecording = true;
+                    
+                    const voiceBtn = document.getElementById('voice-toggle-button');
+                    voiceBtn.classList.add('recording');
+                    voiceBtn.innerHTML = '<i class="fas fa-stop"></i>';
+                    
+                    showVoiceStatus('Recording... Speak now', 'recording');
+                    
+                    silenceTimer = setTimeout(() => {
+                        if (isRecording) {
+                            showVoiceStatus('No speech detected, stopping', 'error');
+                            stopRecording();
+                        }
+                    }, 10000);
+                    
+                } catch (error) {
+                    showVoiceStatus('Error: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Stop recording
+        function stopRecording() {
+            if (isRecording && speechRecognition) {
+                try {
+                    speechRecognition.stop();
+                } catch (error) {
+                    console.error('Error stopping speech:', error);
+                }
+                
+                isRecording = false;
+                clearTimeout(silenceTimer);
+                
+                const voiceBtn = document.getElementById('voice-toggle-button');
+                voiceBtn.classList.remove('recording');
+                voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+            }
+        }
+
+        // Show voice status
+        function showVoiceStatus(message, type) {
+            const statusDiv = document.getElementById('voice-status');
+            statusDiv.textContent = message;
+            statusDiv.className = 'voice-status ' + type;
+        }
+
+        // Toggle recording
+        function toggleRecording() {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        }
+
+        // Send command
         async function sendCommand() {
             const systemPrompt = document.getElementById('system-prompt').value;
             const chatInput = document.getElementById('chat-input');
@@ -826,30 +929,24 @@ Do not append extra commands beyond what the user requests.</textarea>
             const statusDiv = document.getElementById('status');
             const sendButton = document.getElementById('chat-send-button');
             
-            // Don't send if input is empty
             if (!userPrompt) return;
             
-            // Update status
-            statusDiv.className = 'status';
-            statusDiv.innerHTML = '<div class="loading"></div><span>Processing command...</span>';
-            statusDiv.classList.add('show');
+            statusDiv.className = 'system-status processing';
+            statusDiv.innerHTML = '<div class="loading"></div> Processing command...';
             
-            // Show loading state
             sendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             sendButton.disabled = true;
-            responseDiv.textContent = 'Sending command to device...';
+            responseDiv.textContent = 'Sending...';
             
             try {
-                // Build the complete prompt with chat history
                 let completePrompt = userPrompt;
                 if (chatHistory.length > 0) {
-                    // Include previous conversation context
-                    completePrompt = "Previous commands and responses:\n";
+                    completePrompt = "Previous commands:\n";
                     chatHistory.forEach(entry => {
                         completePrompt += `User: ${entry.user}\n`;
                         completePrompt += `Response: ${entry.response}\n\n`;
                     });
-                    completePrompt += `Current command: ${userPrompt}`;
+                    completePrompt += `Current: ${userPrompt}`;
                 }
                 
                 const response = await fetch(functionUrl, {
@@ -863,55 +960,42 @@ Do not append extra commands beyond what the user requests.</textarea>
                     })
                 });
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
                 const data = await response.text();
                 responseDiv.textContent = data;
-                
-                // Add to chat history
                 addToChatHistory(userPrompt, data);
                 
-                statusDiv.className = 'status success show';
-                statusDiv.innerHTML = '<i class="fas fa-check-circle"></i><span>Command executed successfully!</span>';
+                statusDiv.className = 'system-status';
+                statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Command executed';
                 
             } catch (error) {
                 responseDiv.textContent = `Error: ${error.message}`;
-                
-                // Add error to chat history
                 addToChatHistory(userPrompt, `Error: ${error.message}`);
                 
-                statusDiv.className = 'status error show';
-                statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i><span>Failed to execute command</span>';
+                statusDiv.className = 'system-status error';
+                statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Failed';
+                
             } finally {
-                // Reset button
                 sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>';
                 sendButton.disabled = false;
-                
-                // Clear the chat input
                 chatInput.value = '';
-                
-                // Focus back on the input for next command
                 chatInput.focus();
             }
         }
 
-        // Function to add message to chat history
+        // Add to chat history
         function addToChatHistory(userPrompt, response) {
-            // Add to history array
             chatHistory.push({
                 user: userPrompt,
                 response: response,
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             });
-            
-            // Update the chat history display
-            updateChatHistoryDisplay();
+            updateChatDisplay();
         }
 
-        // Function to update the chat history display
-        function updateChatHistoryDisplay() {
+        // Update chat display
+        function updateChatDisplay() {
             const chatHistoryDiv = document.getElementById('chat-history');
             chatHistoryDiv.innerHTML = '';
             
@@ -919,99 +1003,126 @@ Do not append extra commands beyond what the user requests.</textarea>
                 chatHistoryDiv.innerHTML = `
                     <div class="empty-chat">
                         <i class="fas fa-robot"></i>
-                        <div>Send a command to control the robot arm</div>
+                        <p>Send a command to control the robot arm</p>
                     </div>
                 `;
                 return;
             }
             
-            // Add each message to the display
             chatHistory.forEach(entry => {
                 // User message
-                const userMessageDiv = document.createElement('div');
-                userMessageDiv.className = 'chat-message user-message';
-                userMessageDiv.innerHTML = `
-                    <div class="message-bubble">
-                        ${entry.user}
-                        <div class="message-time">${entry.timestamp}</div>
-                    </div>
+                const userDiv = document.createElement('div');
+                userDiv.className = 'chat-message user-message';
+                userDiv.innerHTML = `
+                    <div class="message-bubble">${entry.user}</div>
+                    <div class="message-time">${entry.time}</div>
                 `;
-                chatHistoryDiv.appendChild(userMessageDiv);
+                chatHistoryDiv.appendChild(userDiv);
                 
-                // Response message
-                const responseMessageDiv = document.createElement('div');
-                responseMessageDiv.className = 'chat-message response-message';
-                responseMessageDiv.innerHTML = `
-                    <div class="message-bubble">
-                        ${entry.response}
-                        <div class="message-time">${entry.timestamp}</div>
-                    </div>
+                // Response
+                const respDiv = document.createElement('div');
+                respDiv.className = 'chat-message response-message';
+                respDiv.innerHTML = `
+                    <div class="message-bubble">${entry.response}</div>
+                    <div class="message-time">${entry.time}</div>
                 `;
-                chatHistoryDiv.appendChild(responseMessageDiv);
+                chatHistoryDiv.appendChild(respDiv);
             });
             
-            // Scroll to the bottom of the chat history
             chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
         }
 
         // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check speech support
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                document.getElementById('voice-toggle-button').disabled = true;
+                document.getElementById('voice-example').style.display = 'none';
+            }
+            
+            showVoiceStatus('Click microphone for voice input', 'ready');
+        });
+
+        // Send button
         document.getElementById('chat-send-button').addEventListener('click', sendCommand);
 
-        // Send on Enter key
+        // Enter key in chat input
         document.getElementById('chat-input').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                sendCommand();
+            if (e.key === 'Enter') sendCommand();
+        });
+
+        // Voice toggle
+        document.getElementById('voice-toggle-button').addEventListener('click', toggleRecording);
+
+        // Voice language change
+        document.getElementById('voice-language').addEventListener('change', () => {
+            if (isRecording) {
+                stopRecording();
+                setTimeout(() => startRecording(), 100);
             }
         });
 
-        // Example chip click handlers
-        document.querySelectorAll('.example-chip').forEach(chip => {
+        // Voice example chip
+        document.getElementById('voice-example').addEventListener('click', () => {
+            if (!isRecording) startRecording();
+        });
+
+        // Example chips
+        document.querySelectorAll('.chip:not(#voice-example)').forEach(chip => {
             chip.addEventListener('click', () => {
                 document.getElementById('chat-input').value = chip.textContent;
                 document.getElementById('chat-input').focus();
             });
         });
 
-        // Reset button functionality
+        // Clear chat
         document.getElementById('reset-button').addEventListener('click', () => {
-            // Clear chat history
             chatHistory = [];
-            
-            // Update the chat history display
-            updateChatHistoryDisplay();
-            
-            // Clear the response area
+            updateChatDisplay();
             document.getElementById('response').textContent = 'Waiting for command...';
+            document.getElementById('status').className = 'system-status';
+            document.getElementById('status').innerHTML = '<i class="fas fa-info-circle"></i> Ready for commands';
             
-            // Reset status message
-            const statusDiv = document.getElementById('status');
-            statusDiv.className = 'status';
-            statusDiv.innerHTML = '<i class="fas fa-info-circle"></i><span>System ready. Send a command to begin.</span>';
-            statusDiv.classList.add('show');
+            if (isRecording) stopRecording();
+            showVoiceStatus('Click microphone for voice input', 'ready');
         });
 
-        // Toggle system prompt visibility
+        // Toggle system prompt
         document.getElementById('toggle-system-prompt').addEventListener('click', () => {
             const container = document.getElementById('system-prompt-container');
             const button = document.getElementById('toggle-system-prompt');
             
             if (container.style.display === 'none') {
                 container.style.display = 'block';
-                container.classList.add('show');
-                container.classList.remove('hide');
-                button.textContent = 'Hide Instructions';
+                button.textContent = 'Hide';
             } else {
-                container.classList.add('hide');
-                container.classList.remove('show');
-                button.textContent = 'Show Instructions';
-                setTimeout(() => {
-                    container.style.display = 'none';
-                }, 300);
+                container.style.display = 'none';
+                button.textContent = 'Show';
             }
         });
 
-        // Focus on chat input when page loads
-        document.getElementById('chat-input').focus();
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        
+        // Check for saved theme preference or default to dark mode
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        if (currentTheme === 'light') {
+            body.classList.add('light-mode');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            
+            if (body.classList.contains('light-mode')) {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('theme', 'light');
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
     </script>
 </body>
 </html>
