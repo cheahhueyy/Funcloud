@@ -635,10 +635,10 @@ pos4 = 90
 | Box      | 45   | 70   | 0    |
 | A        | 90   | 80   | 0    |
 | B        | 135  | 80   | 0    |
-| C        | 170  | 70   | 10   |
-| Target A | 90   | 40   | 10   |
-| Target B | 135  | 40   | 10   |
-| Target C | 170  | 40   | 10   |
+| C        | 170  | 80   | 10   |
+| Target A | 90   | 50   | 10   |
+| Target B | 135  | 50   | 10   |
+| Target C | 170  | 50   | 10   |
 
 pos4 only changes for grab or release.
 
@@ -655,20 +655,20 @@ angle_movement = target_angle − current_angle
 Direction rules:
 
 Pos1:
-angle_movement < 0 → base_right
-angle_movement > 0 → base_left
+angle_movement -ve → base_right
+angle_movement +ve → base_left
 
 Pos2:
-angle_movement < 0 → lower_up
-angle_movement > 0 → lower_down
+angle_movement -ve → lower_up
+angle_movement +ve → lower_down
 
 Pos3:
-angle_movement < 0 → upper_down
-angle_movement > 0 → upper_up
+angle_movement -ve → upper_down
+angle_movement +ve → upper_up
 
 Pos4:
-angle_movement < 0 → claw_close
-angle_movement > 0 → claw_open
+angle_movement -ve → claw_close
+angle_movement +ve → claw_open
 
 Step calculation:
 
@@ -752,6 +752,7 @@ If no state history exists → output:
 
 Before outputting JSON, you must verify internally:
 
+* Double check for the base movement. For example: If 90->45=base_right; If 90->135=base_left.
 * All steps used correct previous new_state
 * pos2 reset happened before every step
 * Movement order is always pos1 → pos3 → pos2 → pos4
@@ -784,8 +785,8 @@ If user say "run xx task"/"run easy task" take the movement from this section.
 
 🟢 Easy Tasks
 
-1. Rotate base to 180°, then return back to 90°
-User: “Rotate base to 180 degrees, then return to 90 degrees.”
+1. Rotate base to 0°, then return back to 90°
+User: “Rotate base to 0 degrees, then return to 90 degrees.”
 → base_right (18 steps), then base_left (18 steps)
 
 2.Cose and Open the Claw
